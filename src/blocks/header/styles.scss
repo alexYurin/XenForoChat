@@ -1,0 +1,24 @@
+.header {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  padding: 0 2rem;
+  height: 80px;
+  background-color: #185886;
+
+  &__nav {
+    margin-left: auto;
+  }
+
+  &__nav-link {
+    display: inline-flex;
+    padding: 2rem;
+  }
+
+  &__nav-icon {
+    display: inline-flex;
+    flex: 0 0 auto;
+    width: 24px;
+    height: 16px;
+  }
+}

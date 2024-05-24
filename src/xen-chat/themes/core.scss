@@ -1,0 +1,53 @@
+@use 'config' as cfg;
+@use 'media' as media;
+
+%fixed-chat {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  width: auto;
+  height: auto;
+  z-index: cfg.$z-index-priority;
+}
+
+.xen-chat {
+  position: relative;
+  display: flex;
+  flex-grow: 1;
+  width: 100%;
+  height: 100%;
+  font-size: 1.6rem;
+
+  &[mode='popup'] {
+    @extend %fixed-chat;
+
+    top: 0;
+    left: 0;
+    width: 100%;
+    max-width: unset;
+    min-width: unset;
+    height: 100%;
+
+    @include media.tablet {
+      top: auto;
+      left: auto;
+      right: 6px;
+      bottom: 6px;
+      width: 40vw;
+      max-width: 440px;
+      min-width: 360px;
+      height: 60vh;
+    }
+
+    &.minimize {
+      top: auto;
+      left: auto;
+      right: 12px;
+      bottom: 12px;
+      width: auto;
+      height: auto;
+      min-width: unset;
+      transform: scale(1.2);
+    }
+  }
+}

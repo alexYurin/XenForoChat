@@ -1,1 +1,1 @@
-# XenForoChat
+# XenForo Chat

@@ -1,0 +1,82 @@
+{
+  "name": "xenforo-chat",
+  "version": "0.1.0",
+  "license": "MIT",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build --emptyOutDir",
+    "preview": "vite preview --port=8080",
+    "lint:fix": "eslint ./src --ext .jsx,.js,.ts,.tsx --quiet --fix --ignore-path ./.gitignore",
+    "lint:format": "prettier  --loglevel warn --write \"./**/*.{js,jsx,ts,tsx,css,md,json}\" ",
+    "lint": "yarn lint:format && yarn lint:fix && stylelint **/*.scss",
+    "prepare": "husky install"
+  },
+  "devDependencies": {
+    "@esbuild-plugins/node-globals-polyfill": "^0.1.1",
+    "@esbuild-plugins/node-modules-polyfill": "^0.1.4",
+    "@types/bbcode-to-react": "^0.2.3",
+    "@types/node": "^18.7.23",
+    "@types/qs": "^6.9.15",
+    "@types/react": "^18.2.79",
+    "@types/react-dom": "^18.2.25",
+    "@types/react-swipeable-views": "^0.13.5",
+    "@types/sanitize-html": "^2.11.0",
+    "@typescript-eslint/eslint-plugin": "^5.28.0",
+    "@typescript-eslint/parser": "^5.28.0",
+    "@vitejs/plugin-react": "^4.2.1",
+    "eslint": "^8.11.0",
+    "eslint-plugin-prettier": "^4.0.0",
+    "eslint-plugin-pug": "^1.2.4",
+    "eslint-plugin-react": "^7.34.1",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "html2bbcode": "^1.2.6",
+    "husky": "^8.0.1",
+    "lint-staged": "^13.0.0",
+    "prettier": "2.6.0",
+    "rollup-plugin-polyfill-node": "^0.10.2",
+    "sass": "^1.49.9",
+    "stylelint": "^14.11.0",
+    "stylelint-config-prettier-scss": "^0.0.1",
+    "stylelint-config-standard-scss": "^5.0.0",
+    "typescript": "^4.7.3",
+    "vite": "^5.2.10",
+    "vite-plugin-pug": "^0.3.1",
+    "vite-plugin-static-copy": "^0.5.0"
+  },
+  "dependencies": {
+    "@emoji-mart/data": "^1.2.1",
+    "@emoji-mart/react": "^1.1.1",
+    "@emotion/react": "^11.11.4",
+    "@emotion/styled": "^11.11.5",
+    "@fontsource/roboto": "^5.0.13",
+    "@mui/icons-material": "^5.15.18",
+    "@mui/material": "^5.15.18",
+    "@tiptap/extension-color": "^2.4.0",
+    "@tiptap/extension-list-item": "^2.4.0",
+    "@tiptap/extension-text-style": "^2.4.0",
+    "@tiptap/pm": "^2.4.0",
+    "@tiptap/react": "^2.4.0",
+    "@tiptap/starter-kit": "^2.4.0",
+    "axios": "^1.6.8",
+    "bbcode-to-react": "^0.2.9",
+    "dayjs": "^1.11.11",
+    "emoji-mart": "^5.6.0",
+    "qs": "^6.12.1",
+    "react": "^18.2.0",
+    "react-contenteditable": "^3.3.7",
+    "react-dom": "^18.2.0",
+    "react-swipeable-views": "^0.14.0",
+    "sanitize-html": "^2.13.0",
+    "zustand": "^4.5.2"
+  },
+  "lint-staged": {
+    "*.{ts,tsx}": [
+      "prettier --write .",
+      "eslint --ext .tsx --ext .ts src/ --fix"
+    ],
+    "*.scss": [
+      "npx stylelint **/*.scss --fix"
+    ],
+    "*.js": "eslint --cache --fix"
+  }
+}

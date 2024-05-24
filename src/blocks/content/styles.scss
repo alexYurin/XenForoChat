@@ -1,0 +1,15 @@
+.content {
+  flex: 1 0 auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: #ececec;
+
+  &__column {
+    display: flex;
+    flex-direction: column;
+    margin: 2rem;
+    gap: 1rem;
+  }
+}

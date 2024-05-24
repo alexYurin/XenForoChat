@@ -1,0 +1,14 @@
+$theme-dark: (
+  primary: #0065FF,
+  body-bg: #333,
+) !default;
+
+$theme-light: (
+  primary: #0065FF,
+  body-bg: #fff,
+) !default;
+
+$themes: (
+  'dark': $theme-dark,
+  'light': $theme-light,
+);
