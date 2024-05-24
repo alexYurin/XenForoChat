@@ -70,7 +70,7 @@ const MessagesList = ({ containerHeight }: MessageListProps) => {
           position: 'relative',
           flexDirection: 'column-reverse',
           mt: 'auto',
-          gap: 1,
+          gap: 2,
           paddingX: 2,
           paddingY: 1,
           overflowY: 'auto',

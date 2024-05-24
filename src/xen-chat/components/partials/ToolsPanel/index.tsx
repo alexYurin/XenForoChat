@@ -61,7 +61,12 @@ const ToolsPanel = ({ isShowBackButton, closeHandler }: ToolsPanelProps) => {
           sxLabel={{ fontSize: 18 }}
           hiddenAvatar={mode === XenChatMode.POPUP}
           hiddenAvatarXS={true}
-          sx={{ paddingX: 1.4, paddingY: 1.12, width: '100%' }}
+          sx={{
+            flexGrow: 1,
+            paddingX: 1.4,
+            paddingY: 1.12,
+            width: 'calc(100% - 64px)',
+          }}
         >
           {mode === XenChatMode.BASIC && <ToolsSettingsButton />}
           <ToolsMenuButton />

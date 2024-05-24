@@ -12,7 +12,6 @@ import { Paper, Grid, Box, Divider, SxProps } from '@mui/material'
 import { useChatStore } from '@app/store'
 import type { LayoutProps } from '@app/components/layouts/types'
 import { Empty } from '@app/components/ui'
-import zIndex from '@mui/material/styles/zIndex'
 
 const BasicLayout = ({ root }: LayoutProps) => {
   const currentRoom = useChatStore(state => state.currentRoom)
@@ -63,7 +62,7 @@ const BasicLayout = ({ root }: LayoutProps) => {
       top: 8,
       left: 8,
       width: 'calc(100% - 24px)',
-      height: maxContentHeight,
+      height: maxContentHeight + 8,
       zIndex: 2,
     },
   }))

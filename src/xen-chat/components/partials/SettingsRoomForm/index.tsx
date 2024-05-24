@@ -247,6 +247,18 @@ const SettingsRoomForm = () => {
             variant="outlined"
             sx={sxInput}
           />
+          <TextField
+            autoFocus
+            margin="dense"
+            id="add-conversation-none"
+            name="note"
+            label="Note"
+            type="text"
+            fullWidth
+            disabled={!isCanEdit}
+            variant="outlined"
+            sx={sxInput}
+          />
         </FormGroup>
         <FormGroup sx={{ gap: 0.6 }}>
           <FormLabel
@@ -293,8 +305,8 @@ const SettingsRoomForm = () => {
               Invite
             </FormLabel>
             <MembersAutocomplete
-              label="Invite recipients"
-              placeholder="Invite recipients"
+              label="Find recipients"
+              placeholder="Find recipients"
               onChange={handleChangeUsers}
             />
           </FormGroup>

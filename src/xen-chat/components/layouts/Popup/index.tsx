@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import { styled } from '@mui/material/styles'
 import { Paper, Grid, Box, Divider, SxProps } from '@mui/material'
-import zIndex from '@mui/material/styles/zIndex'
 import {
   MessagesList,
   MessageInput,

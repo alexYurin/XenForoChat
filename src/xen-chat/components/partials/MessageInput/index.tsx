@@ -103,7 +103,7 @@ const MessageInput = () => {
   }
 
   const focusOnEditable = () => {
-    const editable = editableRef.current!.firstElementChild as HTMLDivElement
+    const editable = editableRef.current?.firstElementChild as HTMLDivElement
 
     if (editable) {
       editable.focus()
@@ -215,13 +215,17 @@ const MessageInput = () => {
           paddingX: 1,
           paddingY: 1,
           transition: 'background-color 0.2s linear',
-          cursor: 'text',
-          '&:hover': {
-            bgcolor: 'rgba(25, 118, 210, 0.04)',
-          },
-          '&:focus-within': {
-            bgcolor: 'rgba(25, 118, 210, 0.04)',
-          },
+          cursor: isRoomLock ? 'default' : 'text',
+          ...(!isRoomLock
+            ? {
+                '&:hover': {
+                  bgcolor: 'rgba(25, 118, 210, 0.04)',
+                },
+                '&:focus-within': {
+                  bgcolor: 'rgba(25, 118, 210, 0.04)',
+                },
+              }
+            : {}),
           '& .tiptap > p': {
             margin: 0,
           },
@@ -235,11 +239,13 @@ const MessageInput = () => {
             <AttachFileIcon sx={sxIcon} />
           </Button>
         )}
+
         <Editor
           inputMode={inputMode}
           content={content}
           refObject={editableRef}
           onChange={onChangeEditable}
+          disabled={isRoomLock}
           style={{
             margin: '0 6px',
             padding: '12px 0',
@@ -248,49 +254,10 @@ const MessageInput = () => {
             outline: 0,
             fontFamily: 'roboto',
             lineHeight: '22px',
+            visibility: isRoomLock ? 'hidden' : 'visible',
           }}
         />
-        {/* <div
-          ref={editableRef}
-          contentEditable
-          onInput={onChangeEditable}
-          // disabled={isLoading || isRoomLock}
-          style={{
-            margin: '0 6px',
-            padding: '12px 0',
-            width: '100%',
-            borderRadius: '12px',
-            outline: 0,
-            fontFamily: 'roboto',
-            lineHeight: '22px',
-            wordBreak: 'break-word',
-          }}
-          dangerouslySetInnerHTML={{
-            __html: isRoomLock
-              ? 'Lock conversation (no responses will be allowed)'
-              : content,
-          }}
-        /> */}
-        {/* @TODO Typed */}
-        {/* <ContentEditable
-          ref={editableRef}
-          html={
-            isRoomLock
-              ? 'Lock conversation (no responses will be allowed)'
-              : content
-          }
-          onChange={onChangeEditable}
-          disabled={isLoading || isRoomLock}
-          style={{
-            margin: '0 6px',
-            padding: '12px 0',
-            width: '100%',
-            borderRadius: '12px',
-            outline: 0,
-            fontFamily: 'roboto',
-            lineHeight: '22px',
-          }}
-        /> */}
+
         {/* <Button
           disabled={isLoading}
           variant={isVisibleEmoji ? 'contained' : 'outlined'}
@@ -299,7 +266,6 @@ const MessageInput = () => {
         >
           <InsertEmoticonIcon sx={sxIcon} />
         </Button> */}
-
         <Button
           type="button"
           disabled={isLoading || isRoomLock}

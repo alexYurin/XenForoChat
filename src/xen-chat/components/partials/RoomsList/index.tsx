@@ -3,12 +3,14 @@ import { Empty } from '@app/components/ui'
 import { useChatStore } from '@app/store'
 import RoomsListItem from './RoomsListItem'
 import { sortRoomsByDate } from './helpers'
+import { XenChatMode } from '@app/enums'
 
 export type RoomsListProps = {
   containerHeight: number
 }
 
 const RoomsList = ({ containerHeight }: RoomsListProps) => {
+  const mode = useChatStore(state => state.mode)
   const rooms = useChatStore(state => state.rooms)
   const setVisibleAddForm = useChatStore(state => state.setVisibleAddRoomForm)
 
@@ -25,7 +27,8 @@ const RoomsList = ({ containerHeight }: RoomsListProps) => {
     bgcolor: 'background.paper',
     overflowX: 'hidden',
     overflowY: 'auto',
-    maxHeight: maxContentHeight,
+    maxHeight:
+      mode === XenChatMode.POPUP ? maxContentHeight - 28 : maxContentHeight,
     '&::-webkit-scrollbar': {
       width: '0.4em',
     },

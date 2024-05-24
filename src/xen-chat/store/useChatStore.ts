@@ -101,6 +101,10 @@ const useChatStore = create<ChatState>()(
         if (params) {
           const [api, action] = params
 
+          if (action == 'add') {
+            set(() => ({ isVisibleAddRoomForm: true }))
+          }
+
           console.log('api:', api, '\naction:', action)
         }
       },

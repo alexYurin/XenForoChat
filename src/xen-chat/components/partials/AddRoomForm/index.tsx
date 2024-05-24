@@ -125,6 +125,17 @@ const AddRoomForm = ({ onClose }: AddRoomFormProps) => {
           />
           <TextField
             autoFocus
+            margin="dense"
+            id="add-conversation-none"
+            name="note"
+            label="Note"
+            type="text"
+            fullWidth
+            variant="outlined"
+            sx={sxInput}
+          />
+          <TextField
+            autoFocus
             required
             margin="dense"
             id="add-conversation-message"

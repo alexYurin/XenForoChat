@@ -71,7 +71,7 @@ const MessagesListItem = ({ detail }: MessagesListItemProps) => {
       }
     : {}
 
-  const blockRadius = isRevert ? '18px 0 18px 18px' : '0 18px 18px 18px'
+  const blockRadius = isRevert ? '26px 0 26px 18px' : '0 26px 18px 26px'
 
   const bgColor = isRevert ? '#f3f5f6' : '#f4f4f9'
 
@@ -90,9 +90,9 @@ const MessagesListItem = ({ detail }: MessagesListItemProps) => {
       display="flex"
       alignItems="center"
       width="100%"
-      mt={0.5}
+      mt={0}
       gap={2}
-      height={20}
+      height={16}
     >
       {/*['😍', '😡'].map(react => `${react} `)*/} {/*reaction*/}
       <Typography
@@ -134,50 +134,40 @@ const MessagesListItem = ({ detail }: MessagesListItemProps) => {
         sx={{ p: 0 }}
       />
       <Box
-        id={`message-box-${detail.id}`}
-        display="none"
+        display="flex"
         flexDirection="column"
-        gap={0.5}
+        position="relative"
         sx={{
-          position: 'absolute',
-          top: 0,
-          ...(isRevert
-            ? { left: 0, ml: -4.5, pr: 2.8 }
-            : { right: 0, mr: -4.5, pl: 2.8 }),
-          height: '100%',
-          zIndex: 2,
-        }}
-      >
-        <IconButton color="primary" onClick={handleReply}>
-          <ReplyOutlinedIcon
-            sx={{ transform: `scaleX(${isRevert ? '-' : ''}1)` }}
-          />
-        </IconButton>
-        {detail.isAuthor && detail.permissions.isCanEdit && (
-          <IconButton color="primary" onClick={handleEdit}>
-            <EditNoteOutlinedIcon />
-          </IconButton>
-        )}
-      </Box>
-      <ListItemButton
-        aria-describedby={id}
-        onClick={handleClick}
-        sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          position: 'relative',
-          flexGrow: 0,
-          p: 1.5,
-          pt: 1,
-          maxWidth: '100%',
-          borderRadius: blockRadius,
-          bgcolor: bgColor,
           overflowWrap: 'break-word',
-          '&:hover': {
-            opacity: 0.9,
-          },
+          maxWidth: '90%',
         }}
       >
+        <Box
+          id={`message-box-${detail.id}`}
+          display="none"
+          flexDirection="column"
+          gap={0.5}
+          sx={{
+            position: 'absolute',
+            top: '16px',
+            ...(isRevert
+              ? { left: 0, ml: -4.5, pr: 2.8 }
+              : { right: 0, mr: -4.5, pl: 2.8 }),
+            height: '100%',
+            zIndex: 2,
+          }}
+        >
+          <IconButton color="primary" onClick={handleReply}>
+            <ReplyOutlinedIcon
+              sx={{ transform: `scaleX(${isRevert ? '-' : ''}1)` }}
+            />
+          </IconButton>
+          {detail.isAuthor && detail.permissions.isCanEdit && (
+            <IconButton color="primary" onClick={handleEdit}>
+              <EditNoteOutlinedIcon />
+            </IconButton>
+          )}
+        </Box>
         <Typography
           mb={0.2}
           alignSelf={isRevert ? 'flex-end' : 'flex-start'}
@@ -188,51 +178,75 @@ const MessagesListItem = ({ detail }: MessagesListItemProps) => {
         >
           {detail.member.model.name}
         </Typography>
-        <Typography
-          component={'span'}
-          variant={'body2'}
-          fontSize={14}
+        <ListItemButton
+          aria-describedby={id}
+          onClick={handleClick}
           sx={{
-            alignSelf: isRevert ? 'flex-end' : 'flex-start',
-            overflowWrap: 'break-word',
-            width: '100%',
-            minWidth: '100px',
+            display: 'flex',
+            flexDirection: 'column',
+            position: 'relative',
+            flexGrow: 0,
+            p: 1.5,
+            pt: 0,
             maxWidth: '100%',
-
-            '& blockquote::before': {
-              content: `"${replyAuthor}"`,
-              display: 'block',
-              fontSize: 15,
-              color: stringToColor('testa'),
-              fontWeight: 600,
-            },
-
-            '& blockquote': {
-              display: 'flex',
-              flexDirection: 'column',
-              m: 0,
-              ml: '-12px',
-              mb: 0.6,
-              p: 1.5,
-              bgcolor: '#e8e8ec',
-              width: 'calc(100% - 3px)',
-              overflow: 'hidden',
-              ...(isRevert
-                ? { borderRight: '3px solid #b1b1b1c3' }
-                : { borderLeft: '3px solid #b1b1b1c3' }),
-            },
-
-            '& img': {
-              maxWidth: '100%',
-              objectFit: 'contain',
-              borderRadius: '12px',
+            borderRadius: blockRadius,
+            bgcolor: bgColor,
+            overflowWrap: 'break-word',
+            overflow: 'hidden',
+            '&:hover': {
+              opacity: 0.9,
             },
           }}
         >
-          <div dangerouslySetInnerHTML={{ __html: html }} />
-        </Typography>
-        {footer}
-      </ListItemButton>
+          <Typography
+            component={'span'}
+            variant={'body2'}
+            fontSize={14}
+            sx={{
+              alignSelf: isRevert ? 'flex-end' : 'flex-start',
+              overflowWrap: 'break-word',
+              width: '100%',
+              minWidth: '150px',
+              maxWidth: '100%',
+
+              '& blockquote::before': {
+                content: `"${replyAuthor}"`,
+                display: 'block',
+                fontSize: 15,
+                color: stringToColor('testa'),
+                fontWeight: 600,
+              },
+
+              '& blockquote': {
+                display: 'flex',
+                flexDirection: 'column',
+                m: '-16px',
+                ml: '-12px',
+                mb: 0.6,
+                p: 1.5,
+                bgcolor: '#e8e8ec',
+                width: 'calc(100% - 3px)',
+                overflow: 'hidden',
+                ...(isRevert
+                  ? { borderRight: '3px solid #b1b1b1c3' }
+                  : { borderLeft: '3px solid #b1b1b1c3' }),
+              },
+
+              '& img': {
+                maxWidth: '100%',
+                objectFit: 'contain',
+                borderRadius: '12px',
+              },
+            }}
+          >
+            <div
+              dangerouslySetInnerHTML={{ __html: html }}
+              style={{ paddingTop: '16px' }}
+            />
+          </Typography>
+          {footer}
+        </ListItemButton>
+      </Box>
       {/* <ReactionPanel
         id={id}
         isOpen={isOpenTools}

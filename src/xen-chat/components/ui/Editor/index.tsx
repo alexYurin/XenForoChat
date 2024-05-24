@@ -85,6 +85,7 @@ export type EditorProps = {
   inputMode: 'default' | 'reply' | 'edit'
   content: string
   refObject?: RefObject<HTMLDivElement> | null | undefined
+  disabled?: boolean
   onKeyDown?: KeyboardEventHandler<HTMLDivElement>
   onChange: (html: string) => void
   style?: CSSProperties
@@ -94,6 +95,7 @@ const Editor = ({
   inputMode,
   content,
   refObject,
+  disabled,
   onKeyDown,
   onChange,
   style,
@@ -122,6 +124,7 @@ const Editor = ({
         editor={editor}
         onKeyDown={onKeyDown}
         style={style}
+        disabled={disabled}
       />
     </>
   )
