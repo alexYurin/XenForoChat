@@ -20,7 +20,7 @@ const AppMessage = () => {
         onClose={onClose}
         severity="error"
         variant="filled"
-        sx={{ width: '100%', fontSize: 14 }}
+        sx={{ width: '100%', fontSize: 14, borderRadius: '16px' }}
       >
         {error.message}
       </Alert>

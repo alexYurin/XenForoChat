@@ -1,16 +1,9 @@
-import {
-  FormEventHandler,
-  KeyboardEventHandler,
-  useState,
-  useRef,
-  useEffect,
-} from 'react'
-import ContentEditable from 'react-contenteditable'
-import { Editor } from '@app/components/ui'
+import { KeyboardEventHandler, useState, useRef, useEffect } from 'react'
+import { Editor, AttachmentFile } from '@app/components/ui'
+import DisplayAttachments from './DisplayAttachmets'
 import { Box, Button, Stack, SxProps, Typography } from '@mui/material'
 import data from '@emoji-mart/data'
 import EmojiPicker from '@emoji-mart/react'
-import AttachFileIcon from '@mui/icons-material/AttachFile'
 import SendIcon from '@mui/icons-material/Send'
 import { useChatStore } from '@app/store'
 import { toBBCode } from '@app/helpers'
@@ -33,16 +26,50 @@ const MessageInput = () => {
 
   const [content, setContent] = useState('')
 
+  const [attachments, setAttachments] = useState<File[]>([])
+
   const [isVisibleEmoji, setVisibleEmoji] = useState(false)
 
   const [isLoading, setLoading] = useState(false)
 
   const editableRef = useRef<HTMLDivElement>(null)
+  const inputFileRef = useRef<HTMLInputElement>(null)
 
   const isRoomLock = !currentRoom?.model.isOpenConversation
 
   const onChangeEditable = (html: string) => {
     setContent(html)
+  }
+
+  const onChangeAttachments = (files: FileList | null) => {
+    if (files) {
+      setAttachments([
+        ...attachments,
+        ...Array.from(files)
+          .filter(
+            file =>
+              !attachments
+                .map(attachment => attachment.name)
+                .includes(file.name),
+          )
+          .map(file => {
+            return file
+          }),
+      ])
+    }
+  }
+
+  const onRemoveAttachment = (removeAttachment: File) => {
+    setAttachments(
+      attachments.filter(
+        attachment => attachment.name !== removeAttachment.name,
+      ),
+    )
+  }
+
+  const onCloseAttachments = () => {
+    inputFileRef.current!.value = ''
+    setAttachments([])
   }
 
   const afterSend = () => {
@@ -138,6 +165,12 @@ const MessageInput = () => {
 
   return (
     <Stack sx={{ position: 'relative' }} onKeyDown={onKeyDown}>
+      <DisplayAttachments
+        isLoading={isLoading}
+        files={attachments}
+        onRemove={onRemoveAttachment}
+        onCancel={onCloseAttachments}
+      />
       {(inputMode === 'reply' || inputMode === 'edit') && (
         <Box
           sx={{
@@ -211,12 +244,15 @@ const MessageInput = () => {
         sx={{
           display: 'flex',
           flexFlow: 'nowrap',
+          position: 'relative',
           gap: 0.5,
           paddingX: 1,
           paddingY: 1,
           transition: 'background-color 0.2s linear',
-          cursor: isRoomLock ? 'default' : 'text',
-          ...(!isRoomLock
+          bgcolor: '#fff',
+          cursor: isRoomLock || isLoading ? 'default' : 'text',
+          zIndex: 2,
+          ...(!isRoomLock && !isLoading
             ? {
                 '&:hover': {
                   bgcolor: 'rgba(25, 118, 210, 0.04)',
@@ -234,18 +270,22 @@ const MessageInput = () => {
           },
         }}
       >
-        {currentRoom?.model.permissions.isCanUploadAttachment && (
-          <Button disabled={isLoading} variant="outlined" sx={sxButton}>
-            <AttachFileIcon sx={sxIcon} />
-          </Button>
-        )}
+        {/* {currentRoom?.model.permissions.isCanUploadAttachment && ( */}
+        <AttachmentFile
+          refInput={inputFileRef}
+          onChange={onChangeAttachments}
+          disabled={isRoomLock || isLoading}
+          sxIcon={sxIcon}
+          sx={sxButton}
+        />
+        {/* )} */}
 
         <Editor
           inputMode={inputMode}
           content={content}
           refObject={editableRef}
           onChange={onChangeEditable}
-          disabled={isRoomLock}
+          disabled={isRoomLock || isLoading}
           style={{
             margin: '0 6px',
             padding: '12px 0',
@@ -254,7 +294,7 @@ const MessageInput = () => {
             outline: 0,
             fontFamily: 'roboto',
             lineHeight: '22px',
-            visibility: isRoomLock ? 'hidden' : 'visible',
+            visibility: isRoomLock || isLoading ? 'hidden' : 'visible',
           }}
         />
 
