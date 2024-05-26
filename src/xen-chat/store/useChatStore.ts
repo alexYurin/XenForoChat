@@ -174,11 +174,15 @@ const useChatStore = create<ChatState>()(
         set(() => ({ visibleRemoveRoomDialog: room })),
 
       sendMessage: async (roomId, text, files) => {
-        const { sendMessage, createMessageAttachmentKey } =
-          useXenForoApiStore.getState()
+        const {
+          sendMessage,
+          createMessageAttachmentKey,
+          attachFile,
+          editMessage,
+        } = useXenForoApiStore.getState()
 
         try {
-          const newMessage = await sendMessage(roomId, text)
+          let newMessage = await sendMessage(roomId, text)
 
           const currentRoom = get().currentRoom
 
@@ -187,7 +191,13 @@ const useChatStore = create<ChatState>()(
               newMessage.model.id,
             )
 
-            console.log('RESPONSE KEY', key)
+            const attachments = await Promise.all(
+              files.map(file => attachFile(key, file)),
+            )
+
+            newMessage = await editMessage(roomId, newMessage.model.text, key)
+
+            console.log('RESPONSE ATTACHMENTS', attachments, newMessage)
           }
 
           set(() => ({

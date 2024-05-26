@@ -34,7 +34,11 @@ export interface XenForoApiState {
     message: string,
     key?: string,
   ) => Promise<Message>
-  editMessage: (messageId: number, message: string) => Promise<Message>
+  editMessage: (
+    messageId: number,
+    message: string,
+    key?: string,
+  ) => Promise<Message>
   replyMessage: (
     roomId: number,
     messageId: number,
@@ -61,6 +65,7 @@ export interface XenForoApiState {
     messageId: number,
     attachment?: File,
   ) => Promise<{ key: string; attachment?: Attachment }>
+  attachFile: (key: string, file: File) => Promise<Attachment>
 }
 
 const useXenForoApiStore = create<XenForoApiState>()(
@@ -116,9 +121,12 @@ const useXenForoApiStore = create<XenForoApiState>()(
           .then(response => adoptMessage(response.data.message))
       },
 
-      editMessage: (messageId, message) => {
+      editMessage: (messageId, message, key) => {
         return get()
-          .api.conversationMessages.update(messageId, { message })
+          .api.conversationMessages.update(messageId, {
+            message,
+            attachment_key: key,
+          })
           .then(response => adoptMessage(response.data.message))
       },
 
@@ -183,6 +191,12 @@ const useXenForoApiStore = create<XenForoApiState>()(
         return get()
           .api.conversations.markUnread(roomId)
           .then(response => response.data)
+      },
+
+      attachFile: (key: string, file: File) => {
+        return get()
+          .api.attachments.upload({ key, attachment: file })
+          .then(response => adoptAttachment(response.data.attachment))
       },
 
       createMessageAttachmentKey: (messageId: number, attachment?: File) => {
