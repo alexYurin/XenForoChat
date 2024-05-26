@@ -208,3 +208,9 @@ export type RequestParamsSearchConversation = {
   starred?: string
   unread?: string
 }
+
+export type RequestParamsAttachmentKey = {
+  type: string
+  messageId: number
+  attachment?: File
+}

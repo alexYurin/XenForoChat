@@ -1,12 +1,17 @@
 import { create } from 'zustand'
 import { devtools } from 'zustand/middleware'
 import { XenforoApi } from '@app/api/xenforo'
-import { adoptMessage, adoptRoom } from '@app/adapters/xenForoApi'
-import { Room, Message } from '@app/core/domain'
+import {
+  adoptAttachment,
+  adoptMessage,
+  adoptRoom,
+} from '@app/adapters/xenForoApi'
+import { Room, Message, Attachment } from '@app/core/domain'
 import {
   RequestParamsAddConversation,
   RequestParamsSearchConversation,
   RequestParamsUpdateConversation,
+  ResponseAttachmentType,
   ResponseSuccessType,
   UserType,
 } from '@app/api/xenforo/types'
@@ -24,7 +29,11 @@ export interface XenForoApiState {
     messages: Message[]
     pagination: { lastPage: number; currentPage: number; total: number }
   }>
-  sendMessage: (roomId: number, message: string, key?: any) => Promise<Message>
+  sendMessage: (
+    roomId: number,
+    message: string,
+    key?: string,
+  ) => Promise<Message>
   editMessage: (messageId: number, message: string) => Promise<Message>
   replyMessage: (
     roomId: number,
@@ -48,6 +57,10 @@ export interface XenForoApiState {
   starRoom: (roomId: number, isStared?: boolean) => Promise<ResponseSuccessType>
   readRoom: (roomId: number, unixTime: number) => Promise<ResponseSuccessType>
   unreadRoom: (roomId: number) => Promise<ResponseSuccessType>
+  createMessageAttachmentKey: (
+    messageId: number,
+    attachment?: File,
+  ) => Promise<{ key: string; attachment?: Attachment }>
 }
 
 const useXenForoApiStore = create<XenForoApiState>()(
@@ -170,6 +183,21 @@ const useXenForoApiStore = create<XenForoApiState>()(
         return get()
           .api.conversations.markUnread(roomId)
           .then(response => response.data)
+      },
+
+      createMessageAttachmentKey: (messageId: number, attachment?: File) => {
+        return get()
+          .api.attachments.newKey({
+            attachment,
+            messageId,
+            type: 'conversation_message',
+          })
+          .then(response => ({
+            key: response.data.key,
+            attachment: response.data.attachment
+              ? adoptAttachment(response.data.attachment)
+              : undefined,
+          }))
       },
     }),
     {

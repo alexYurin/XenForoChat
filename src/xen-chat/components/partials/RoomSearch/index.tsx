@@ -8,7 +8,6 @@ import {
 } from '@mui/material'
 import ManageSearchIcon from '@mui/icons-material/ManageSearch'
 import { useChatStore } from '@app/store'
-import { CircleRounded } from '@mui/icons-material'
 
 const RoomSearch = () => {
   const isReady = useChatStore(state => state.isReady)
@@ -52,10 +51,10 @@ const RoomSearch = () => {
         paddingY: 1.5,
         transition: 'background-color 0.2s linear',
         '&:not(:disabled)hover': {
-          bgcolor: 'rgba(25, 118, 210, 0.04)',
+          bgcolor: 'rgba(213, 213, 213, 0.2)',
         },
         '&:focus-within': {
-          bgcolor: 'rgba(25, 118, 210, 0.04)',
+          bgcolor: 'rgba(213, 213, 213, 0.2)',
         },
       }}
     >

@@ -68,13 +68,18 @@ const MessageInput = () => {
   }
 
   const onCloseAttachments = () => {
-    inputFileRef.current!.value = ''
+    if (inputFileRef.current) {
+      inputFileRef.current.value = ''
+    }
+
     setAttachments([])
+    handleResetInputMode()
   }
 
   const afterSend = () => {
     setLoading(false)
     setContent('')
+    setAttachments([])
   }
 
   const sendContent = () => {
@@ -103,7 +108,9 @@ const MessageInput = () => {
         return
       }
 
-      sendMessage(currentRoom.model.id, convertedContent).finally(afterSend)
+      sendMessage(currentRoom.model.id, convertedContent, attachments).finally(
+        afterSend,
+      )
     }
   }
 
@@ -163,81 +170,73 @@ const MessageInput = () => {
     focusOnEditable()
   }, [inputMode])
 
+  const toolsTitle =
+    inputMode === 'reply'
+      ? `Reply to ${inputModeContent?.member.model.name}`
+      : inputMode === 'edit'
+      ? 'Edit'
+      : undefined
+
+  const isVisibleTools = attachments.length > 0 || inputMode !== 'default'
+
   return (
     <Stack sx={{ position: 'relative' }} onKeyDown={onKeyDown}>
       <DisplayAttachments
+        isVisible={isVisibleTools}
+        title={toolsTitle}
         isLoading={isLoading}
         files={attachments}
         onRemove={onRemoveAttachment}
         onCancel={onCloseAttachments}
-      />
-      {(inputMode === 'reply' || inputMode === 'edit') && (
-        <Box
-          sx={{
-            position: 'absolute',
-            left: 0,
-            bottom: '100%',
-            height: 'auto',
-            display: 'flex',
-            flexFlow: 'row nowrap',
-            m: 0,
-            p: 1.5,
-            gap: 0.5,
-            bgcolor: '#f3f5f6',
-            width: 'calc(100% - 24px)',
-            wordBreak: 'break-word',
-            overflow: 'hidden',
-            zIndex: 2,
-
-            // '& blockquote::before': {
-            //   content: `"${replyAuthor}"`,
-            //   display: 'block',
-            //   fontSize: 15,
-            //   color: stringToColor('testa'),
-            //   fontWeight: 600,
-            // },
-
-            '& blockquote': {
+      >
+        {(inputMode === 'reply' || inputMode === 'edit') && (
+          <Box
+            sx={{
+              height: 'auto',
               display: 'flex',
-              flexDirection: 'column',
+              flexFlow: 'row nowrap',
               m: 0,
-              ml: '-12px',
-              mb: 0.6,
-              p: 1.5,
-              bgcolor: '#e8e8ec',
-              width: 'calc(100% - 3px)',
+              padding: 2,
+              pb: 0,
+              gap: 0.5,
+              borderTop: '1px solid #eee',
+              width: 'calc(100% - 24px)',
+              wordBreak: 'break-word',
               overflow: 'hidden',
-              borderLeft: '3px solid #b1b1b1c3',
-            },
+              zIndex: 2,
 
-            '& img': {
-              objectFit: 'contain',
-              maxWidth: '100%',
-              maxHeight: '60px',
-              borderRadius: '12px',
-            },
-          }}
-        >
-          <Box display="flex" flexDirection="column" mr={1.5}>
-            <Typography fontWeight={500}>
-              {inputModeContent?.member.model.name}
-            </Typography>
-            <Typography>
-              <span
-                dangerouslySetInnerHTML={{
-                  __html: inputModeContent!.textParsed,
-                }}
-              />
-            </Typography>
-          </Box>
-          <Button
-            sx={{ alignSelf: 'center', ml: 'auto', borderRadius: '8px' }}
-            onClick={handleResetInputMode}
+              '& blockquote': {
+                display: 'flex',
+                flexDirection: 'column',
+                m: 0,
+                p: 1.5,
+                bgcolor: '#e8e8ec',
+                width: '100%',
+                overflow: 'hidden',
+                borderLeft: '3px solid #b1b1b1c3',
+              },
+
+              '& img': {
+                objectFit: 'contain',
+                maxWidth: '100%',
+                maxHeight: '60px',
+                borderRadius: '12px',
+              },
+            }}
           >
-            Cancel
-          </Button>
-        </Box>
-      )}
+            <Box display="flex" flexDirection="column" mr={1.5}>
+              <Typography>
+                <span
+                  style={{ fontSize: 13 }}
+                  dangerouslySetInnerHTML={{
+                    __html: inputModeContent!.textParsed,
+                  }}
+                />
+              </Typography>
+            </Box>
+          </Box>
+        )}
+      </DisplayAttachments>
       <Box
         component="form"
         onClick={focusOnEditable}
@@ -252,33 +251,25 @@ const MessageInput = () => {
           bgcolor: '#fff',
           cursor: isRoomLock || isLoading ? 'default' : 'text',
           zIndex: 2,
-          ...(!isRoomLock && !isLoading
-            ? {
-                '&:hover': {
-                  bgcolor: 'rgba(25, 118, 210, 0.04)',
-                },
-                '&:focus-within': {
-                  bgcolor: 'rgba(25, 118, 210, 0.04)',
-                },
-              }
-            : {}),
           '& .tiptap > p': {
             margin: 0,
           },
           '& .tiptap:focus-visible': {
             outline: 'none',
           },
+          '& blockquote': {
+            display: 'none',
+          },
         }}
       >
-        {/* {currentRoom?.model.permissions.isCanUploadAttachment && ( */}
         <AttachmentFile
+          isVisible={inputMode === 'default'}
           refInput={inputFileRef}
           onChange={onChangeAttachments}
           disabled={isRoomLock || isLoading}
           sxIcon={sxIcon}
           sx={sxButton}
         />
-        {/* )} */}
 
         <Editor
           inputMode={inputMode}

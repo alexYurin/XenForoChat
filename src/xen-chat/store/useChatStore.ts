@@ -29,7 +29,8 @@ const createError = (error: unknown): ErrorType => {
   return { message: `${error}` }
 }
 
-// @TODO Decompose, create selectors
+// @TODO Decompose
+// @TODO create selectors
 
 export interface ChatState {
   isReady: boolean
@@ -57,7 +58,11 @@ export interface ChatState {
   setVisibleLeaveRoomDialog: (room: Room | null) => void
   visibleRemoveRoomDialog: Room | null
   setVisibleRemoveRoomDialog: (room: Room | null) => void
-  sendMessage: (roomId: number, message: string, key?: any) => Promise<void>
+  sendMessage: (
+    roomId: number,
+    message: string,
+    files?: File[],
+  ) => Promise<void>
   editMessage: (messageId: number, message: string) => Promise<void>
   replyMessage: (
     roomId: number,
@@ -99,13 +104,32 @@ const useChatStore = create<ChatState>()(
         const params = location.search.replace('?', '')?.split('/')
 
         if (params) {
-          const [api, action] = params
+          const [location, payload] = params
 
-          if (action == 'add') {
-            set(() => ({ isVisibleAddRoomForm: true }))
+          console.log('location:', location, '\npayload:', payload)
+
+          const roomId =
+            typeof payload === 'string'
+              ? parseInt(payload.split('.')[1] || '')
+              : null
+
+          if (roomId && !isNaN(roomId)) {
+            try {
+              get().setCurrentRoom(
+                roomId,
+                get().rooms?.find(room => room.model.id === roomId)?.model
+                  .lastPageNumber,
+              )
+            } catch {
+              console.log(`Room id: ${roomId} is not exist`)
+            }
+
+            return
           }
 
-          console.log('api:', api, '\naction:', action)
+          if (payload == 'add') {
+            set(() => ({ isVisibleAddRoomForm: true }))
+          }
         }
       },
 
@@ -149,13 +173,22 @@ const useChatStore = create<ChatState>()(
       setVisibleRemoveRoomDialog: room =>
         set(() => ({ visibleRemoveRoomDialog: room })),
 
-      sendMessage: async (roomId, text, key) => {
-        const { sendMessage } = useXenForoApiStore.getState()
+      sendMessage: async (roomId, text, files) => {
+        const { sendMessage, createMessageAttachmentKey } =
+          useXenForoApiStore.getState()
 
         try {
           const newMessage = await sendMessage(roomId, text)
 
           const currentRoom = get().currentRoom
+
+          if (files?.length) {
+            const { key } = await createMessageAttachmentKey(
+              newMessage.model.id,
+            )
+
+            console.log('RESPONSE KEY', key)
+          }
 
           set(() => ({
             rooms: get().rooms?.map(room => {
@@ -294,15 +327,24 @@ const useChatStore = create<ChatState>()(
       resetCurrentRoom: () => {
         set(() => ({ currentRoom: null }))
       },
-      setCurrentRoom: async (roomId, messagesPage = 1) => {
+      setCurrentRoom: async (roomId, messagesPage = 0) => {
         const currentRoom =
           get().rooms?.find(room => room.model.id === roomId) || null
 
-        const lastPage = currentRoom!.model.lastPageNumber
+        const lastPage = currentRoom?.model.lastPageNumber || messagesPage
 
         get().setLoadingMessages(true)
 
+        set(() => ({
+          inputMode: 'default',
+          inputModeContent: null,
+        }))
+
         try {
+          const user = get().user
+
+          const roomUrl = `?conversations/${user?.username}.${roomId}`
+
           const { fetchRoomMessages } = useXenForoApiStore.getState()
 
           const response = await fetchRoomMessages(roomId, lastPage)
@@ -323,6 +365,8 @@ const useChatStore = create<ChatState>()(
           get().resetError()
 
           get().setLoadingMessages(false)
+
+          window.history.replaceState({}, document.title, roomUrl)
         } catch (error) {
           const responseError = error as ResponseErrorType
           set(() => ({ error: createError(responseError) }))

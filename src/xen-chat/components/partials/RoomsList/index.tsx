@@ -1,4 +1,4 @@
-import { Button, List, SxProps } from '@mui/material'
+import { Box, Button, CircularProgress, List, SxProps } from '@mui/material'
 import { Empty } from '@app/components/ui'
 import { useChatStore } from '@app/store'
 import RoomsListItem from './RoomsListItem'
@@ -11,6 +11,7 @@ export type RoomsListProps = {
 
 const RoomsList = ({ containerHeight }: RoomsListProps) => {
   const mode = useChatStore(state => state.mode)
+  const isReady = useChatStore(state => state.isReady)
   const rooms = useChatStore(state => state.rooms)
   const setVisibleAddForm = useChatStore(state => state.setVisibleAddRoomForm)
 
@@ -68,7 +69,20 @@ const RoomsList = ({ containerHeight }: RoomsListProps) => {
     )
   }
 
-  return renderRooms()
+  if (isReady) {
+    return renderRooms()
+  }
+
+  return (
+    <Box
+      display="flex"
+      justifyContent="center"
+      alignItems="center"
+      height="100%"
+    >
+      <CircularProgress color="primary" />
+    </Box>
+  )
 }
 
 export default RoomsList

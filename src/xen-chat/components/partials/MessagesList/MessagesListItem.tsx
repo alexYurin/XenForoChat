@@ -71,7 +71,7 @@ const MessagesListItem = ({ detail }: MessagesListItemProps) => {
       }
     : {}
 
-  const blockRadius = isRevert ? '26px 0 26px 18px' : '0 26px 18px 26px'
+  const blockRadius = isRevert ? '16px 0 16px 16px' : '0 16px 16px 16px'
 
   const bgColor = isRevert ? '#f3f5f6' : '#f4f4f9'
 

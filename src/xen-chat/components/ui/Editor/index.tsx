@@ -1,6 +1,5 @@
 import {
   CSSProperties,
-  FormEventHandler,
   KeyboardEventHandler,
   RefObject,
   useEffect,
@@ -108,9 +107,19 @@ const Editor = ({
     },
   })
 
+  const onEditorKeyDown: KeyboardEventHandler<HTMLDivElement> = event => {
+    if (typeof onKeyDown === 'function') {
+      onKeyDown(event)
+    }
+  }
+
   useEffect(() => {
-    if (inputMode === 'edit') {
+    if (inputMode === 'edit' && content) {
       editor?.commands.setContent(content)
+    }
+
+    if (inputMode === 'default' && !content) {
+      editor?.commands.setContent('')
     }
   }, [inputMode, content])
 
@@ -122,7 +131,7 @@ const Editor = ({
       <EditorContent
         ref={refObject}
         editor={editor}
-        onKeyDown={onKeyDown}
+        onKeyDown={onEditorKeyDown}
         style={style}
         disabled={disabled}
       />

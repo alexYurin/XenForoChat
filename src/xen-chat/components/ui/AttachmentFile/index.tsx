@@ -3,6 +3,7 @@ import { Button, styled, SxProps } from '@mui/material'
 import AttachFileIcon from '@mui/icons-material/AttachFile'
 
 export type AttachmentFileProps = {
+  isVisible?: boolean
   refInput?: RefObject<HTMLInputElement>
   disabled?: boolean
   sx?: SxProps
@@ -23,6 +24,7 @@ const VisuallyHiddenInput = styled('input')({
 })
 
 const AttachmentFile = ({
+  isVisible = true,
   refInput,
   onChange,
   disabled,
@@ -36,7 +38,16 @@ const AttachmentFile = ({
   }
 
   return (
-    <Button component="label" disabled={disabled} variant="outlined" sx={sx}>
+    <Button
+      component="label"
+      disabled={disabled}
+      variant="outlined"
+      sx={{
+        ...sx,
+        visibility: isVisible ? 'visible' : 'hidden',
+        position: isVisible ? 'relative' : 'absolute',
+      }}
+    >
       <AttachFileIcon sx={sxIcon} />
       <VisuallyHiddenInput
         ref={refInput}

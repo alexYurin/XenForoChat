@@ -47,7 +47,19 @@ const RoomsListItem = ({ detail }: RoomsListItemProps) => {
 
   return (
     <ListItem sx={{ paddingX: 0, paddingY: 0 }} onClick={onPressRoomItem}>
-      <ListItemButton selected={isSelected} sx={{ paddingX: 0, paddingY: 0 }}>
+      <ListItemButton
+        selected={isSelected}
+        sx={{
+          paddingX: 0,
+          paddingY: 0,
+          '&.Mui-selected': {
+            bgcolor: 'rgba(213, 213, 213, 0.2)',
+          },
+          '&.Mui-selected:hover': {
+            bgcolor: 'rgba(213, 213, 213, 0.1)',
+          },
+        }}
+      >
         <AvatarExt
           badgeCount={detail.isUnread ? 1 : 0}
           avatarBadgeVariant="dot"

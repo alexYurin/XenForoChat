@@ -51,57 +51,44 @@ const MessagesList = ({ containerHeight }: MessageListProps) => {
   }, [observerTarget])
 
   return (
-    <>
-      {isLoadingMessages && (
-        <Box
-          sx={{
-            position: 'sticky',
-            top: 0,
-            left: 0,
-          }}
-        >
-          <LinearProgress />
-        </Box>
-      )}
-      <List
-        ref={listTarget}
-        sx={{
-          display: 'flex',
-          position: 'relative',
-          flexDirection: 'column-reverse',
-          mt: 'auto',
-          gap: 2,
-          paddingX: 2,
-          paddingY: 1,
-          overflowY: 'auto',
-          overflowX: 'auto',
-          opacity: isLoadingMessages ? 0.5 : 1,
-          pointerEvents: isLoadingMessages ? 'none' : undefined,
-          height:
-            mode === XenChatMode.POPUP
-              ? `${containerHeight! - 176}px`
-              : undefined,
-          maxHeight:
-            mode === XenChatMode.POPUP
-              ? `${containerHeight! - 176}px`
-              : undefined,
-          '&::-webkit-scrollbar': {
-            width: '0.4em',
-          },
-          '&::-webkit-scrollbar-track': {
-            boxShadow: 'inset 0 0 6px rgba(0,0,0,0.00)',
-            webkitBoxShadow: 'inset 0 0 6px rgba(0,0,0,0.00)',
-          },
-          '&::-webkit-scrollbar-thumb': {
-            borderRadius: 6,
-            backgroundColor: 'rgba(0,0,0,0.15)',
-          },
-        }}
-      >
-        <Messages />
-        <span ref={observerTarget} style={{ visibility: 'hidden' }} />
-      </List>
-    </>
+    <List
+      ref={listTarget}
+      sx={{
+        display: 'flex',
+        position: 'relative',
+        flexDirection: 'column-reverse',
+        mt: 'auto',
+        gap: 2,
+        paddingX: 2,
+        paddingY: 1,
+        overflowY: 'auto',
+        overflowX: 'auto',
+        opacity: isLoadingMessages ? 0.5 : 1,
+        pointerEvents: isLoadingMessages ? 'none' : undefined,
+        height:
+          mode === XenChatMode.POPUP
+            ? `${containerHeight! - 176}px`
+            : undefined,
+        maxHeight:
+          mode === XenChatMode.POPUP
+            ? `${containerHeight! - 176}px`
+            : undefined,
+        '&::-webkit-scrollbar': {
+          width: '0.4em',
+        },
+        '&::-webkit-scrollbar-track': {
+          boxShadow: 'inset 0 0 6px rgba(0,0,0,0.00)',
+          webkitBoxShadow: 'inset 0 0 6px rgba(0,0,0,0.00)',
+        },
+        '&::-webkit-scrollbar-thumb': {
+          borderRadius: 6,
+          backgroundColor: 'rgba(0,0,0,0.15)',
+        },
+      }}
+    >
+      <Messages />
+      <span ref={observerTarget} style={{ visibility: 'hidden' }} />
+    </List>
   )
 }
 

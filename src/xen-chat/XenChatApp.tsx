@@ -34,13 +34,15 @@ export default function XenChatApp({ root, mode, closeApp }: XenChatAppProps) {
   const Layout = getLayoutComponent(mode)
 
   const ready = () => {
-    setReady(true)
     checkUrlParams()
     timeoutId = setTimeout(subscribe, INTERVAL)
   }
 
   const checkUrlParams = () => {
-    handleApiUrl(window.location)
+    setTimeout(() => {
+      handleApiUrl(window.location)
+      setReady(true)
+    }, 500)
   }
 
   const subscribe = () => {

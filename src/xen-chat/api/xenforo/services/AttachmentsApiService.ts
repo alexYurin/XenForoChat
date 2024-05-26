@@ -2,8 +2,9 @@ import BaseXenForoApiService, {
   BaseXenForoApiServiceNetwork,
 } from './BaseXenForoApiService'
 import { toQueryString } from '@app/helpers'
-
+import qs from 'qs'
 import type {
+  RequestParamsAttachmentKey,
   ResponseAttachmentsType,
   ResponseAttachmentType,
   ResponseSuccessType,
@@ -39,14 +40,24 @@ export class AttachmentsApiService extends BaseXenForoApiService {
     }).post<ResponseAttachmentType>(`/${AttachmentsApiService.path}`, form)
   }
 
-  public async newKey(params: {
-    key: string
-    context?: string[]
-    attachment?: File
-  }) {
-    return this.network().post<
-      { key: string } & Partial<ResponseAttachmentType>
-    >(`/${AttachmentsApiService.path}/new-key`, params)
+  public async newKey(params: RequestParamsAttachmentKey) {
+    const form = new FormData()
+
+    form.append('type', params.type)
+    form.append(`context[message_id]`, `${params.messageId}`)
+
+    if (params.attachment) {
+      form.append('attachment', params.attachment)
+    }
+
+    return this.network({
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    }).post<{ key: string } & Partial<ResponseAttachmentType>>(
+      `/${AttachmentsApiService.path}/new-key`,
+      form,
+    )
   }
 
   public async get(attachment_id: number) {
