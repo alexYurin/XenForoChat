@@ -224,7 +224,12 @@ const MessageInput = () => {
               },
             }}
           >
-            <Box display="flex" flexDirection="column" mr={1.5}>
+            <Box
+              display="flex"
+              flexDirection="column"
+              mr={1.5}
+              sx={{ width: '100%', overflow: 'hidden' }}
+            >
               <Typography>
                 <span
                   style={{ fontSize: 13 }}
