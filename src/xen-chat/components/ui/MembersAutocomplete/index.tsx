@@ -10,6 +10,7 @@ import { UserType } from '@app/api/xenforo/types'
 export type MembersAutocompleteProps = {
   name?: string
   label?: string
+  defaultValue?: UserType[]
   placeholder?: string
   required?: boolean
   onChange?: (users: UserType[]) => void
@@ -19,20 +20,21 @@ const MembersAutocomplete = ({
   name,
   label,
   placeholder,
+  defaultValue,
   required,
   onChange,
 }: MembersAutocompleteProps) => {
   const user = useChatStore(state => state.user)
   const findUser = useXenForoApiStore(state => state.findUser)
 
-  const [value, setValue] = useState<UserType[]>([])
+  const [value, setValue] = useState<UserType[]>(defaultValue || [])
   const [inputValue, setInputValue] = useState('')
   const [options, setOptions] = useState<UserType[]>([])
 
   const fetch = useMemo(
     () =>
       debounce((username: string, callback: (users: UserType[]) => void) => {
-        findUser(username).then(callback)
+        findUser(username).then(response => callback(response.recommendations))
       }, 400),
     [],
   )
@@ -65,6 +67,12 @@ const MembersAutocomplete = ({
       active = false
     }
   }, [value, inputValue, fetch])
+
+  useEffect(() => {
+    if (defaultValue) {
+      setValue(defaultValue)
+    }
+  }, [defaultValue])
 
   return (
     <Autocomplete

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useChatStore } from '@app/store'
 import {
   Backdrop,
@@ -27,6 +27,7 @@ const AddRoomForm = ({ onClose }: AddRoomFormProps) => {
   const addNewRoom = useChatStore(state => state.addNewRoom)
   const isVisible = useChatStore(state => state.isVisibleAddRoomForm)
   const setVisible = useChatStore(state => state.setVisibleAddRoomForm)
+  const inviteUser = useChatStore(state => state.inviteUser)
 
   const [users, setUsers] = useState<UserType[]>([])
   const [isLoading, setLoading] = useState(false)
@@ -79,6 +80,12 @@ const AddRoomForm = ({ onClose }: AddRoomFormProps) => {
       .finally(() => setLoading(false))
   }
 
+  useEffect(() => {
+    if (inviteUser) {
+      setUsers([inviteUser])
+    }
+  }, [inviteUser])
+
   const sxFormLabelProps: SxProps = {
     mb: 2,
     '& .MuiTypography-root': {
@@ -110,6 +117,7 @@ const AddRoomForm = ({ onClose }: AddRoomFormProps) => {
             label="Add recipients"
             placeholder="Add recipients"
             onChange={onAddUsers}
+            defaultValue={users}
             required
           />
           <TextField

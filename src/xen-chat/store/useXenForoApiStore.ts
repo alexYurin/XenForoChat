@@ -11,7 +11,7 @@ import {
   RequestParamsAddConversation,
   RequestParamsSearchConversation,
   RequestParamsUpdateConversation,
-  ResponseAttachmentType,
+  ResponseFindUsernameType,
   ResponseSuccessType,
   UserType,
 } from '@app/api/xenforo/types'
@@ -19,7 +19,7 @@ import {
 export interface XenForoApiState {
   api: XenforoApi
   fetchMe: () => Promise<UserType>
-  findUser: (username: string) => Promise<UserType[]>
+  findUser: (username: string) => Promise<ResponseFindUsernameType>
   token: string | null
   updateToken: (token: string) => void
   fetchRoomMessages: (
@@ -85,7 +85,7 @@ const useXenForoApiStore = create<XenForoApiState>()(
       findUser: username => {
         return get()
           .api.user.find(username)
-          .then(response => response.data.recommendations)
+          .then(response => response.data)
       },
 
       token: null,

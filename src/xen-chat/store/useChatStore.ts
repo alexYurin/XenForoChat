@@ -39,6 +39,7 @@ export interface ChatState {
   setReady: (isReady: boolean) => void
   handleApiUrl: (location: Location) => void
   isUrlQuery: boolean
+  inviteUser: UserType | null
   inputMode: 'default' | 'reply' | 'edit'
   inputModeContent: MessageModelType | null
   setInputMode: (
@@ -115,7 +116,8 @@ const useChatStore = create<ChatState>()(
       },
 
       isUrlQuery: false,
-      handleApiUrl: location => {
+      inviteUser: null,
+      handleApiUrl: async location => {
         const params = location.search.replace('?', '')?.split('/')
         const pathname = location.pathname
 
@@ -135,7 +137,19 @@ const useChatStore = create<ChatState>()(
           }
         }
 
+        const invite = async (username: string | null) => {
+          if (username) {
+            const { findUser } = useXenForoApiStore.getState()
+            const { exact } = await findUser(username)
+
+            set(() => ({ inviteUser: exact }))
+          }
+        }
+
+        const inviteUser = new URL(location.toString()).searchParams.get('to')
+
         if (pathnameLocations.includes('add')) {
+          await invite(inviteUser)
           showAddRoom()
         } else {
           pathnameLocations.forEach(path => {
@@ -166,10 +180,18 @@ const useChatStore = create<ChatState>()(
             return
           }
 
-          if (payload == 'add') {
-            set(() => ({ isUrlQuery: true }))
-            showAddRoom()
-          }
+          const convertedPayload = payload
+            .replace('&', '|')
+            .replace('?', '|')
+            .split('|')
+
+          convertedPayload.forEach(async res => {
+            if (res === 'add') {
+              set(() => ({ isUrlQuery: true }))
+              await invite(inviteUser)
+              showAddRoom()
+            }
+          })
         }
       },
 
@@ -436,10 +458,9 @@ const useChatStore = create<ChatState>()(
 
             window.history.replaceState({}, document.title, roomUrl)
           } else {
-            const pathname = window.location.pathname.replace(
-              `${user?.username}.${prevRoomId ?? roomId}`,
-              '',
-            )
+            const pathname = window.location.pathname
+              .replace('/add', '')
+              .replace(`${user?.username}.${prevRoomId ?? roomId}`, '')
 
             const roomUrl = `${pathname}${user?.username}.${roomId}`
 
