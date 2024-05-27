@@ -22,6 +22,7 @@ import bbCodeParser from 'bbcode-to-react'
 import { MessageModelType } from '@app/core/domain/Message'
 import { useChatStore } from '@app/store'
 import { XenChatMode } from '@app/enums'
+import AttachmentPreview from './AttachmentPreview'
 
 export type MessagesListItemProps = {
   detail: MessageModelType
@@ -178,6 +179,21 @@ const MessagesListItem = ({ detail }: MessagesListItemProps) => {
         >
           {detail.member.model.name}
         </Typography>
+
+        {detail.attachments.length > 0 && (
+          <Box
+            display="flex"
+            sx={{ flexFlow: 'row wrap', mb: 1, gap: 1, width: '100%' }}
+          >
+            {detail.attachments.map(attachment => (
+              <AttachmentPreview
+                key={attachment.model.id}
+                detail={attachment}
+              />
+            ))}
+          </Box>
+        )}
+
         <ListItemButton
           aria-describedby={id}
           onClick={handleClick}

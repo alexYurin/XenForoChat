@@ -108,6 +108,10 @@ const Editor = ({
   })
 
   const onEditorKeyDown: KeyboardEventHandler<HTMLDivElement> = event => {
+    if (event.code === 'Enter' && !event.shiftKey) {
+      editor?.commands.setContent('')
+    }
+
     if (typeof onKeyDown === 'function') {
       onKeyDown(event)
     }

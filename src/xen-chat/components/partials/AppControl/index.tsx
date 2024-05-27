@@ -3,6 +3,7 @@ import MessageOutlinedIcon from '@mui/icons-material/MessageOutlined'
 import HorizontalRuleOutlinedIcon from '@mui/icons-material/HorizontalRuleOutlined'
 import OpenInNewOutlinedIcon from '@mui/icons-material/OpenInNewOutlined'
 import CloseOutlinedIcon from '@mui/icons-material/CloseOutlined'
+import { useChatStore } from '@app/store'
 
 export type AppControlProps = {
   isMinimize: boolean
@@ -15,6 +16,9 @@ const AppControl = ({
   setMinimize,
   closeHandler,
 }: AppControlProps) => {
+  const user = useChatStore(state => state.user)
+  const rooms = useChatStore(state => state.rooms)
+
   const changeMinimize = () => {
     if (!isMinimize) {
       return
@@ -27,10 +31,11 @@ const AppControl = ({
     setMinimize(true)
   }
 
-  // @TODO Add unread message count
+  const unreadRooms = rooms?.filter(room => room.model.isUnread)
+
   const badgeMessageButton = (
     <Badge
-      badgeContent={0}
+      badgeContent={unreadRooms?.length}
       overlap="circular"
       color="error"
       anchorOrigin={{
@@ -62,7 +67,7 @@ const AppControl = ({
           <IconButton onClick={minimize} sx={{ ml: 'auto' }}>
             <HorizontalRuleOutlinedIcon />
           </IconButton>
-          <IconButton>
+          <IconButton component="a" href={user?.view_url} target="_blank">
             <OpenInNewOutlinedIcon />
           </IconButton>
           <IconButton onClick={closeHandler}>

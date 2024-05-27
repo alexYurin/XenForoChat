@@ -1,12 +1,36 @@
 import { KeyboardEventHandler, useState, useRef, useEffect } from 'react'
 import { Editor, AttachmentFile } from '@app/components/ui'
 import DisplayAttachments from './DisplayAttachmets'
-import { Box, Button, Stack, SxProps, Typography } from '@mui/material'
+import {
+  Alert,
+  Box,
+  Button,
+  Snackbar,
+  Stack,
+  SxProps,
+  Typography,
+} from '@mui/material'
+import { filterByExt, filterBySizeInMb } from './helpers'
 import data from '@emoji-mart/data'
 import EmojiPicker from '@emoji-mart/react'
 import SendIcon from '@mui/icons-material/Send'
 import { useChatStore } from '@app/store'
 import { toBBCode } from '@app/helpers'
+
+const MAX_SIZE = 10 // Mb
+
+const MAX_COUNT_ATTACHMENTS = 10
+
+const ALLOW_EXTENSIONS = [
+  'zip',
+  'txt',
+  'pdf',
+  'png',
+  'jpg',
+  'jpeg',
+  'jpe',
+  'gif',
+]
 
 // @TODO Decompose
 const MessageInput = () => {
@@ -32,20 +56,51 @@ const MessageInput = () => {
 
   const [isLoading, setLoading] = useState(false)
 
+  const [error, setError] = useState<string | null>(null)
+
   const editableRef = useRef<HTMLDivElement>(null)
   const inputFileRef = useRef<HTMLInputElement>(null)
 
   const isRoomLock = !currentRoom?.model.isOpenConversation
+
+  const isDisableAttachments =
+    !currentRoom?.model.permissions.isCanUploadAttachment
 
   const onChangeEditable = (html: string) => {
     setContent(html)
   }
 
   const onChangeAttachments = (files: FileList | null) => {
-    if (files) {
+    if (!files) {
+      return
+    }
+
+    if ((files?.length ?? 0) + attachments.length > MAX_COUNT_ATTACHMENTS) {
+      setError(`The attachment limit exceeds ${MAX_COUNT_ATTACHMENTS}`)
+
+      return
+    }
+
+    const filteredByExt = filterByExt(ALLOW_EXTENSIONS, Array.from(files))
+
+    if (filteredByExt.notAllow.length) {
+      filteredByExt.notAllow.forEach(file => {
+        setError(`${file.name} not allowed extension`)
+      })
+    }
+
+    const filteredBySize = filterBySizeInMb(MAX_SIZE, filteredByExt.allow)
+
+    if (filteredBySize.notAllow.length) {
+      filteredBySize.notAllow.forEach(file => {
+        setError(`${file.name} maximum size exceeded (${MAX_SIZE}Mb)`)
+      })
+    }
+
+    if (filteredBySize.allow.length) {
       setAttachments([
         ...attachments,
-        ...Array.from(files)
+        ...filteredBySize.allow
           .filter(
             file =>
               !attachments
@@ -76,6 +131,10 @@ const MessageInput = () => {
     handleResetInputMode()
   }
 
+  const closeError = () => {
+    setError(null)
+  }
+
   const afterSend = () => {
     setLoading(false)
     setContent('')
@@ -97,13 +156,18 @@ const MessageInput = () => {
           currentRoom?.model.id,
           inputModeContent!,
           convertedContent,
+          attachments,
         ).finally(afterSend)
 
         return
       }
 
       if (inputMode === 'edit') {
-        editMessage(inputModeContent!.id, convertedContent).finally(afterSend)
+        editMessage(
+          inputModeContent!.id,
+          convertedContent,
+          attachments,
+        ).finally(afterSend)
 
         return
       }
@@ -268,10 +332,10 @@ const MessageInput = () => {
         }}
       >
         <AttachmentFile
-          isVisible={inputMode === 'default'}
+          isVisible={!isRoomLock && !isDisableAttachments}
           refInput={inputFileRef}
           onChange={onChangeAttachments}
-          disabled={isRoomLock || isLoading}
+          disabled={isLoading}
           sxIcon={sxIcon}
           sx={sxButton}
         />
@@ -317,6 +381,23 @@ const MessageInput = () => {
           <EmojiPicker data={data} onEmojiSelect={onSelectEmoji} />
         </Box>
       )}
+
+      <Snackbar
+        open={Boolean(error)}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+        autoHideDuration={6000}
+        onClose={closeError}
+        sx={{ position: 'absolute' }}
+      >
+        <Alert
+          onClose={closeError}
+          severity="warning"
+          variant="filled"
+          sx={{ width: '100%', fontSize: 14, borderRadius: '16px' }}
+        >
+          {error}
+        </Alert>
+      </Snackbar>
     </Stack>
   )
 }

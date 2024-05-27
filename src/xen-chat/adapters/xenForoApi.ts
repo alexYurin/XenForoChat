@@ -12,8 +12,10 @@ export function adoptAttachment(attachment: AttachmentType) {
     id: attachment.attachment_id,
     name: attachment.filename,
     url: attachment.direct_url,
+    thumbnailUrl: attachment.thumbnail_url,
     size: attachment.file_size,
     type: attachment.content_type,
+    createdAt: new Date(attachment.attach_date * 1000),
   })
 }
 

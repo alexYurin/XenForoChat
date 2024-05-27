@@ -63,11 +63,16 @@ export interface ChatState {
     message: string,
     files?: File[],
   ) => Promise<void>
-  editMessage: (messageId: number, message: string) => Promise<void>
+  editMessage: (
+    messageId: number,
+    message: string,
+    files?: File[],
+  ) => Promise<void>
   replyMessage: (
     roomId: number,
     replyMessageModel: MessageModelType,
     text: string,
+    files?: File[],
   ) => Promise<void>
   update: () => Promise<void>
   searchString: string
@@ -191,13 +196,13 @@ const useChatStore = create<ChatState>()(
               newMessage.model.id,
             )
 
-            const attachments = await Promise.all(
-              files.map(file => attachFile(key, file)),
+            await Promise.all(files.map(file => attachFile(key, file)))
+
+            newMessage = await editMessage(
+              newMessage.model.id,
+              newMessage.model.text,
+              key,
             )
-
-            newMessage = await editMessage(roomId, newMessage.model.text, key)
-
-            console.log('RESPONSE ATTACHMENTS', attachments, newMessage)
           }
 
           set(() => ({
@@ -233,10 +238,25 @@ const useChatStore = create<ChatState>()(
         }
       },
 
-      editMessage: async (messageId, message) => {
-        const { editMessage } = useXenForoApiStore.getState()
+      editMessage: async (messageId, message, files) => {
+        const { editMessage, attachFile, createMessageAttachmentKey } =
+          useXenForoApiStore.getState()
         try {
-          const editedMessage = await editMessage(messageId, message)
+          let editedMessage = await editMessage(messageId, message)
+
+          if (files?.length) {
+            const { key } = await createMessageAttachmentKey(
+              editedMessage.model.id,
+            )
+
+            await Promise.all(files.map(file => attachFile(key, file)))
+
+            editedMessage = await editMessage(
+              editedMessage.model.id,
+              editedMessage.model.text,
+              key,
+            )
+          }
 
           set(() => ({
             inputMode: 'default',
@@ -267,11 +287,11 @@ const useChatStore = create<ChatState>()(
         }
       },
 
-      replyMessage: async (roomId, replyMessage, text) => {
+      replyMessage: async (roomId, replyMessage, text, files) => {
         try {
           const replyMessageString = generateReplyMessage(replyMessage)
 
-          await get().sendMessage(roomId, replyMessageString + text)
+          await get().sendMessage(roomId, replyMessageString + text, files)
 
           set(() => ({ inputMode: 'default', inputModeContent: null }))
         } catch (error) {
