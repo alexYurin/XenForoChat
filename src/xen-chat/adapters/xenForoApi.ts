@@ -7,6 +7,8 @@ import {
   ConversationType,
 } from '@app/api/xenforo/types'
 
+const parseDate = (unixTime: number) => new Date(unixTime * 1000)
+
 export function adoptAttachment(attachment: AttachmentType) {
   return new Attachment({
     id: attachment.attachment_id,
@@ -15,7 +17,7 @@ export function adoptAttachment(attachment: AttachmentType) {
     thumbnailUrl: attachment.thumbnail_url,
     size: attachment.file_size,
     type: attachment.content_type,
-    createdAt: new Date(attachment.attach_date * 1000),
+    createdAt: parseDate(attachment.attach_date),
   })
 }
 
@@ -24,7 +26,8 @@ export function adoptMember(user: UserType) {
     id: user.user_id,
     name: user.username,
     title: user.user_title,
-    avatar: user.avatar_urls[0],
+    avatar: user.avatar_urls.h,
+    link: user.view_url,
   })
 }
 
@@ -41,19 +44,22 @@ export function adoptRoom(conversation: ConversationType) {
     isOpenConversation: conversation.conversation_open,
     isOpenInvite: conversation.open_invite,
     owner: adoptMember(conversation.Starter),
-    members: Object.keys(conversation.recipients).map(
-      key =>
-        new Member({
-          id: parseInt(key),
-          name: conversation.recipients[key].toString(),
-        }),
-    ),
     firstMessageId: conversation.first_message_id,
     lastMessageId: conversation.last_message_id,
-    lastMessageDate: new Date(conversation.last_message_date * 1000),
     lastPageNumber: conversation.last_message_page,
     lastMessage: adoptMessage(conversation.last_message),
-    createdAt: new Date(conversation.start_date * 1000),
+    lastMessageDate: parseDate(conversation.last_message_date),
+    createdAt: parseDate(conversation.start_date),
+    members: conversation.members.map(
+      member =>
+        new Member({
+          id: member.user_id,
+          name: member.username,
+          title: member.user_title,
+          avatar: member.avatar_urls.h,
+          link: member.view_url,
+        }),
+    ),
     permissions: {
       isCanEdit: conversation.can_edit,
       isCanInvite: conversation.can_invite,

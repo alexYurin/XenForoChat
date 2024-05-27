@@ -1,9 +1,10 @@
 import { stringToColor, stringToInitials } from '@app/helpers'
-import { Avatar, AvatarGroup, SxProps } from '@mui/material'
+import { Avatar, AvatarGroup, Box, SxProps, Typography } from '@mui/material'
 
 export type AvatarGroupExtItem = {
   label: string
   src?: string
+  href?: string
 }
 
 export type AvatarGroupExtProps = {
@@ -42,7 +43,16 @@ const AvatarGroupExt = ({
           key={index}
           src={item.src}
           alt={item.label}
-          sx={{ width: size, height: size, bgcolor: stringToColor(item.label) }}
+          component="a"
+          href={item.href}
+          target="_blank"
+          title={item.label}
+          sx={{
+            width: size,
+            height: size,
+            bgcolor: stringToColor(item.label),
+            textDecoration: 'none',
+          }}
         >
           {stringToInitials(item.label)}
         </Avatar>

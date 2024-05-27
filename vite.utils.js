@@ -1,10 +1,10 @@
 import { readdirSync } from 'fs'
 import { extname, resolve } from 'path'
 
-export const scanPath = (path) => readdirSync(path)
+export const scanPath = path => readdirSync(path)
 
-export const getExt = (filename) => {
-  const pattern = /\.([0-9a-z]+)(?=[?#])|(\.)(?:[\w]+)$/gmi
+export const getExt = filename => {
+  const pattern = /\.([0-9a-z]+)(?=[?#])|(\.)(?:[\w]+)$/gim
   return (filename.match(pattern) || [])[0]
 }
 
@@ -27,7 +27,14 @@ export const getObjectEntries = (entries, src, context) => {
 
     return isFile
       ? [...acc, entryObject]
-      : [...acc, ...getObjectEntries(scanPath(entryObject.src), entryObject.src, entryObject.name)]
+      : [
+          ...acc,
+          ...getObjectEntries(
+            scanPath(entryObject.src),
+            entryObject.src,
+            entryObject.name,
+          ),
+        ]
   }, [])
 }
 

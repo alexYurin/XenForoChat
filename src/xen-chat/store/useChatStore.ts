@@ -38,6 +38,7 @@ export interface ChatState {
   setRootHeight: (height: number) => void
   setReady: (isReady: boolean) => void
   handleApiUrl: (location: Location) => void
+  isUrlQuery: boolean
   inputMode: 'default' | 'reply' | 'edit'
   inputModeContent: MessageModelType | null
   setInputMode: (
@@ -113,8 +114,40 @@ const useChatStore = create<ChatState>()(
         set(() => ({ isReady }))
       },
 
+      isUrlQuery: false,
       handleApiUrl: location => {
         const params = location.search.replace('?', '')?.split('/')
+        const pathname = location.pathname
+
+        const pathnameLocations = pathname.split('/')
+
+        const showAddRoom = () => set(() => ({ isVisibleAddRoomForm: true }))
+
+        const setRoom = (roomId: number) => {
+          try {
+            get().setCurrentRoom(
+              roomId,
+              get().rooms?.find(room => room.model.id === roomId)?.model
+                .lastPageNumber,
+            )
+          } catch {
+            console.log(`Room id: ${roomId} is not exist`)
+          }
+        }
+
+        if (pathnameLocations.includes('add')) {
+          showAddRoom()
+        } else {
+          pathnameLocations.forEach(path => {
+            const roomId = parseInt(path.split('.')[1] || '')
+
+            if (roomId && !isNaN(roomId)) {
+              setRoom(roomId)
+
+              return
+            }
+          })
+        }
 
         if (params) {
           const [location, payload] = params
@@ -127,21 +160,15 @@ const useChatStore = create<ChatState>()(
               : null
 
           if (roomId && !isNaN(roomId)) {
-            try {
-              get().setCurrentRoom(
-                roomId,
-                get().rooms?.find(room => room.model.id === roomId)?.model
-                  .lastPageNumber,
-              )
-            } catch {
-              console.log(`Room id: ${roomId} is not exist`)
-            }
+            set(() => ({ isUrlQuery: true }))
+            setRoom(roomId)
 
             return
           }
 
           if (payload == 'add') {
-            set(() => ({ isVisibleAddRoomForm: true }))
+            set(() => ({ isUrlQuery: true }))
+            showAddRoom()
           }
         }
       },
@@ -366,6 +393,8 @@ const useChatStore = create<ChatState>()(
         set(() => ({ currentRoom: null }))
       },
       setCurrentRoom: async (roomId, messagesPage = 0) => {
+        const prevRoomId = get().currentRoom?.model?.id
+
         const currentRoom =
           get().rooms?.find(room => room.model.id === roomId) || null
 
@@ -380,8 +409,6 @@ const useChatStore = create<ChatState>()(
 
         try {
           const user = get().user
-
-          const roomUrl = `?conversations/${user?.username}.${roomId}`
 
           const { fetchRoomMessages } = useXenForoApiStore.getState()
 
@@ -404,7 +431,20 @@ const useChatStore = create<ChatState>()(
 
           get().setLoadingMessages(false)
 
-          window.history.replaceState({}, document.title, roomUrl)
+          if (get().isUrlQuery) {
+            const roomUrl = `?conversations/${user?.username}.${roomId}`
+
+            window.history.replaceState({}, document.title, roomUrl)
+          } else {
+            const pathname = window.location.pathname.replace(
+              `${user?.username}.${prevRoomId ?? roomId}`,
+              '',
+            )
+
+            const roomUrl = `${pathname}${user?.username}.${roomId}`
+
+            window.history.replaceState({}, document.title, roomUrl)
+          }
         } catch (error) {
           const responseError = error as ResponseErrorType
           set(() => ({ error: createError(responseError) }))

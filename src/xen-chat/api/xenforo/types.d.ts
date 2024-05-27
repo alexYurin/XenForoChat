@@ -1,6 +1,5 @@
 export type ConversationType = {
   username: string
-  recipients: Record<string, number | string>
   is_starred: boolean
   is_unread: boolean
   can_edit: boolean
@@ -24,6 +23,13 @@ export type ConversationType = {
   last_message_user_id: number
   last_message: ConversationMessageType
   Starter: UserType
+  members: {
+    avatar_urls: Record<string, string>
+    user_id: number
+    user_title: string
+    username: string
+    view_url: string
+  }[]
 }
 
 export type ConversationMessageType = {
@@ -74,7 +80,7 @@ export type UserType = {
   allow_send_personal_conversation?: string
   allow_view_identities?: string
   allow_view_profile?: string
-  avatar_urls: Record<string, string> //Maps from size types to URL.
+  avatar_urls: Record<string, string>
   profile_banner_urls: Record<string, string> //Maps from size types to URL.
   can_ban: boolean
   can_converse: boolean
@@ -190,6 +196,7 @@ export type ResponseFindUsernameType = {
 export type RequestParamsAddConversation = {
   recipient_ids: number[]
   title: string
+  note?: string
   message: string
   conversation_open?: string
   open_invite?: string

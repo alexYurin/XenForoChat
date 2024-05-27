@@ -28,6 +28,8 @@ const ToolsPanel = ({
         currentRoom?.model.members.map(member => ({
           id: member.model.id,
           label: member.model.name,
+          src: member.model.avatar,
+          href: member.model.link,
         })) || []
       }
       max={4}

@@ -118,14 +118,15 @@ const MessagesListItem = ({ detail }: MessagesListItemProps) => {
     <StyledListItem
       sx={{
         alignItems: 'flex-start',
-        p: 0,
-        gap: 0.5,
+        p: 1,
+        gap: 1,
         maxWidth: mode === XenChatMode.POPUP ? '90%' : '60%',
         width: 'max-content',
         ...containerStyles,
         [`&:hover [id=message-box-${detail.id}]`]: {
           display: isRoomLock ? 'none' : 'flex',
         },
+        borderRadius: '16px',
       }}
     >
       <AvatarExt

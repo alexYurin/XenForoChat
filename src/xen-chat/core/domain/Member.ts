@@ -5,6 +5,7 @@ export type MemberModelType = {
   name: string
   title?: string
   avatar?: string
+  link?: string
 }
 
 export default class Member extends BaseModel<MemberModelType> {

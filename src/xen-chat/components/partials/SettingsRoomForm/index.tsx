@@ -53,6 +53,8 @@ const SettingsRoomForm = () => {
 
   const [title, setTitle] = useState(room?.model.title)
 
+  const [note, setNote] = useState(room?.model.note)
+
   const [users, setUsers] = useState<UserType[]>([])
 
   const [isLockConversation, setLockConversation] = useState(
@@ -103,6 +105,10 @@ const SettingsRoomForm = () => {
     setTitle(event.target.value)
   }
 
+  const handleChangeNote = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setNote(event.target.value)
+  }
+
   const handleChangeUsers = (users: UserType[]) => {
     setUsers(users)
   }
@@ -126,6 +132,7 @@ const SettingsRoomForm = () => {
 
     const isChangeSettings =
       (title !== undefined && title !== room?.model.title) ||
+      (note !== undefined && note !== room?.model.note) ||
       (isLockConversation !== undefined &&
         isLockConversation !== !room?.model.isOpenConversation) ||
       (isOpenInvite !== undefined && isOpenInvite !== room?.model.isOpenInvite)
@@ -145,6 +152,7 @@ const SettingsRoomForm = () => {
     if (isChangeSettings) {
       await updateRoom(room!.model.id, {
         title: title || room?.model.title,
+        note: note || room?.model.note,
         conversation_open: !isLockConversation ? '1' : '0',
         open_invite: isOpenInvite ? '1' : '0',
       })
@@ -166,6 +174,7 @@ const SettingsRoomForm = () => {
   useEffect(() => {
     if (room) {
       setTitle(room.model.title)
+      setNote(room.model.note)
       setLockConversation(!room.model.isOpenConversation)
       setOpenInvite(room.model.isOpenInvite)
       setStared(room.model.isStared)
@@ -217,8 +226,16 @@ const SettingsRoomForm = () => {
               <Typography fontSize={12} mr={1}>
                 Starter:
               </Typography>
-              <Typography fontSize={12} fontWeight={599}>
-                {room?.model.owner.model.name}
+              <Typography
+                component="a"
+                href={room?.model.owner.model.link}
+                target="_blank"
+                fontSize={12}
+                fontWeight={599}
+                color="#1976d2"
+                sx={{ cursor: 'pointer', textDecoration: 'none' }}
+              >
+                {room?.model.owner.model.name} ({room?.model.owner.model.title})
               </Typography>
             </ListItem>
             <ListItem sx={{ paddingY: 0.5 }}>
@@ -256,6 +273,9 @@ const SettingsRoomForm = () => {
             type="text"
             fullWidth
             disabled={!isCanEdit}
+            defaultValue={room?.model.note}
+            value={note}
+            onChange={handleChangeNote}
             variant="outlined"
             sx={sxInput}
           />
@@ -277,11 +297,16 @@ const SettingsRoomForm = () => {
               return (
                 <Chip
                   key={member.model.id}
-                  label={member.model.name}
-                  sx={{ fontSize: 12, fontWeight: 500 }}
+                  label={`${member.model.name} (${member.model.title})`}
+                  sx={{ fontSize: 12, fontWeight: 500, cursor: 'pointer' }}
+                  component="a"
+                  title={member.model.title}
+                  href={member.model.link}
+                  target="_blank"
                   avatar={
                     <AvatarExt
                       isOnline={false}
+                      src={member.model.avatar}
                       avatarText={member.model.name}
                     />
                   }
