@@ -1,4 +1,10 @@
-import { useMemo, useEffect, useState, ChangeEventHandler } from 'react'
+import {
+  useMemo,
+  useEffect,
+  useState,
+  ChangeEventHandler,
+  RefObject,
+} from 'react'
 import {
   IconButton,
   Paper,
@@ -9,7 +15,11 @@ import {
 import ManageSearchIcon from '@mui/icons-material/ManageSearch'
 import { useChatStore } from '@app/store'
 
-const RoomSearch = () => {
+export type RoomSearchProps = {
+  elRef?: RefObject<HTMLFormElement>
+}
+
+const RoomSearch = ({ elRef }: RoomSearchProps) => {
   const isReady = useChatStore(state => state.isReady)
   const rooms = useChatStore(state => state.rooms)
   const getRooms = useChatStore(state => state.getRooms)
@@ -42,6 +52,7 @@ const RoomSearch = () => {
 
   return (
     <Paper
+      ref={elRef}
       component="form"
       elevation={0}
       sx={{

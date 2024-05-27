@@ -50,6 +50,8 @@ const RoomsListItem = ({ detail }: RoomsListItemProps) => {
       <ListItemButton
         selected={isSelected}
         sx={{
+          display: 'flex',
+          flexDirection: 'column',
           paddingX: 0,
           paddingY: 0,
           '&.Mui-selected': {
@@ -65,9 +67,33 @@ const RoomsListItem = ({ detail }: RoomsListItemProps) => {
           avatarBadgeVariant="dot"
           isStared={detail.isStared}
           avatarText={detail.title}
-          label={label}
+          label={
+            <>
+              {label}
+              {detail.note && (
+                <Typography
+                  pb={0.2}
+                  noWrap
+                  fontSize={11}
+                  sx={{
+                    display: 'inline-block',
+                    maxWidth: '90%',
+                    justifySelf: 'flex-start',
+                    textOverflow: 'ellipsis',
+                  }}
+                >
+                  Note: Note text for room
+                </Typography>
+              )}
+            </>
+          }
           description={description}
-          sx={{ paddingX: 1.4, bgcolor: 'transparent', width: calcWidthText }}
+          sx={{
+            paddingX: 1.4,
+            // pb: 0,
+            bgcolor: 'transparent',
+            width: calcWidthText,
+          }}
         >
           <Box
             sx={{

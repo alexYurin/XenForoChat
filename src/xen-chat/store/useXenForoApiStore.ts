@@ -44,7 +44,10 @@ export interface XenForoApiState {
     messageId: number,
     message: string,
   ) => Promise<Message>
-  fetchRooms: (params?: RequestParamsSearchConversation) => Promise<Room[]>
+  fetchRooms: (params?: RequestParamsSearchConversation) => Promise<{
+    rooms: Room[]
+    pagination: { lastPage: number; currentPage: number; total: number }
+  }>
   addRoom: (params: RequestParamsAddConversation) => Promise<Room>
   updateRoom: (
     roomId: number,
@@ -139,11 +142,16 @@ const useXenForoApiStore = create<XenForoApiState>()(
       fetchRooms: params => {
         return get()
           .api.conversations.getAll(params)
-          .then(response =>
-            response.data.conversations.map(conversation =>
+          .then(response => ({
+            rooms: response.data.conversations.map(conversation =>
               adoptRoom(conversation),
             ),
-          )
+            pagination: {
+              currentPage: response.data.pagination.current_page,
+              lastPage: response.data.pagination.last_page,
+              total: response.data.pagination.total,
+            },
+          }))
       },
 
       addRoom: params => {

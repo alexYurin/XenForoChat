@@ -10,6 +10,7 @@ export type ConversationType = {
   view_url: string
   conversation_id: number
   title: string
+  note?: string
   user_id: number
   start_date: number
   open_invite: boolean
@@ -34,6 +35,7 @@ export type ConversationMessageType = {
   view_url: string
   Conversation?: ConversationType
   Attachments?: AttachmentType[]
+  note?: string
   is_reacted_to: boolean
   visitor_reaction_id: number
   message_id: number
@@ -196,6 +198,7 @@ export type RequestParamsAddConversation = {
 
 export type RequestParamsUpdateConversation = {
   title?: string
+  note?: string
   open_invite?: string
   conversation_open?: string
 }

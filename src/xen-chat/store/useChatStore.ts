@@ -34,6 +34,8 @@ const createError = (error: unknown): ErrorType => {
 
 export interface ChatState {
   isReady: boolean
+  rootHeight: number | null
+  setRootHeight: (height: number) => void
   setReady: (isReady: boolean) => void
   handleApiUrl: (location: Location) => void
   inputMode: 'default' | 'reply' | 'edit'
@@ -78,7 +80,10 @@ export interface ChatState {
   searchString: string
   rooms: Room[] | null
   getRooms: (params?: Partial<RequestParamsSearchConversation>) => Promise<void>
+  loadMoreRooms: () => Promise<void>
   currentRoom: Room | null
+  roomsPage: number
+  lastRoomsPage: number | null
   resetCurrentRoom: () => void
   setCurrentRoom: (roomId: number, messagesPage?: number) => Promise<void>
   addNewRoom: (params: RequestParamsAddConversation) => Promise<void>
@@ -100,6 +105,9 @@ const useChatStore = create<ChatState>()(
   devtools(
     // persist(
     (set, get) => ({
+      rootHeight: null,
+      setRootHeight: height => set(() => ({ rootHeight: height })),
+
       isReady: false,
       setReady: isReady => {
         set(() => ({ isReady }))
@@ -514,7 +522,33 @@ const useChatStore = create<ChatState>()(
       },
 
       rooms: null,
+      roomsPage: 1,
+      lastRoomsPage: null,
       searchString: '',
+      loadMoreRooms: async () => {
+        const { fetchRooms } = useXenForoApiStore.getState()
+        const rooms = get().rooms
+        const roomsPage = get().roomsPage
+        const lastRoomsPage = get().lastRoomsPage
+
+        if (roomsPage < (lastRoomsPage || 1)) {
+          try {
+            const response = await fetchRooms({
+              page: roomsPage + 1,
+            })
+
+            set(() => ({
+              rooms: [...(rooms || []), ...response.rooms],
+              roomsPage: response.pagination.currentPage,
+              lastRoomsPage: response.pagination.lastPage,
+            }))
+            get().resetError()
+          } catch (error) {
+            const responseError = error as ResponseErrorType
+            set(() => ({ error: createError(responseError) }))
+          }
+        }
+      },
       getRooms: async params => {
         const search = params?.search ?? ''
         const { fetchRooms } = useXenForoApiStore.getState()
@@ -522,9 +556,16 @@ const useChatStore = create<ChatState>()(
         set(() => ({ searchString: search }))
 
         try {
-          const rooms = await fetchRooms({ search })
+          const response = await fetchRooms({
+            search,
+            page: search ? 1 : params?.page ?? 1,
+          })
 
-          set(() => ({ rooms }))
+          set(() => ({
+            rooms: response.rooms,
+            roomsPage: response.pagination.currentPage,
+            lastRoomsPage: response.pagination.lastPage,
+          }))
           get().resetError()
         } catch (error) {
           const responseError = error as ResponseErrorType
@@ -533,7 +574,6 @@ const useChatStore = create<ChatState>()(
       },
 
       setStarRoom: async (roomId, isStared) => {
-        console.log(isStared)
         const { starRoom } = useXenForoApiStore.getState()
 
         try {

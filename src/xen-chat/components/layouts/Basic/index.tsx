@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import {
   MessagesList,
   MessageInput,
@@ -10,12 +10,11 @@ import {
 import { styled } from '@mui/material/styles'
 import { Paper, Grid, Box, Divider, SxProps } from '@mui/material'
 import { useChatStore } from '@app/store'
-import type { LayoutProps } from '@app/components/layouts/types'
 import { Empty } from '@app/components/ui'
 
-const BasicLayout = ({ root }: LayoutProps) => {
+const BasicLayout = () => {
+  const rootHeight = useChatStore(state => state.rootHeight)
   const currentRoom = useChatStore(state => state.currentRoom)
-
   const resetCurrentRoom = useChatStore(state => state.resetCurrentRoom)
 
   const [isVisibleMessagesBox, setVisibleMessagesBox] = useState(
@@ -27,10 +26,10 @@ const BasicLayout = ({ root }: LayoutProps) => {
     resetCurrentRoom()
   }
 
-  const isShowMessagesContent = currentRoom !== null
+  const accountDetailRef = useRef<HTMLDivElement>(null)
+  const roomSearchRef = useRef<HTMLFormElement>(null)
 
-  // @TODO Calculate
-  const maxContentHeight = root.offsetHeight - 32
+  const isShowMessagesContent = currentRoom !== null
 
   // @TODO Replace in styles
   const sxContainerProps: SxProps = {
@@ -38,7 +37,7 @@ const BasicLayout = ({ root }: LayoutProps) => {
     p: 2,
     width: '100%',
     height: '100%',
-    maxHeight: `${root.offsetHeight}px`,
+    maxHeight: rootHeight,
     overflow: 'auto',
   }
 
@@ -48,7 +47,6 @@ const BasicLayout = ({ root }: LayoutProps) => {
     height: '100%',
     overflow: 'hidden',
     borderRadius: 4,
-    maxHeight: maxContentHeight,
   }
 
   const StyledRoomsBox = styled(Grid)(({ theme }) => ({
@@ -62,7 +60,6 @@ const BasicLayout = ({ root }: LayoutProps) => {
       top: 8,
       left: 8,
       width: 'calc(100% - 24px)',
-      height: maxContentHeight + 8,
       zIndex: 2,
     },
   }))
@@ -72,16 +69,22 @@ const BasicLayout = ({ root }: LayoutProps) => {
     opacity: 0.5,
   }
 
+  const accountDetailHeight = accountDetailRef?.current?.offsetHeight || 0
+  const roomSearchHeight = roomSearchRef?.current?.offsetHeight || 0
+
+  const sectionHeight =
+    rootHeight! - (accountDetailHeight + roomSearchHeight + 32)
+
   return (
     <Box component="section" sx={sxContainerProps}>
       <Grid container spacing={1} height="100%">
         <StyledRoomsBox item lg={3.5} md={4.5} xs={12}>
           <Paper elevation={0} sx={sxSectionProps}>
-            <AccountDetail />
+            <AccountDetail elRef={accountDetailRef} />
             <Divider sx={sxDivider} />
-            <RoomSearch />
+            <RoomSearch elRef={roomSearchRef} />
             <Divider sx={sxDivider} />
-            <RoomsList containerHeight={maxContentHeight} />
+            <RoomsList sx={{ height: sectionHeight + 18 }} />
           </Paper>
         </StyledRoomsBox>
         <StyledMessagesBox item lg={8.5} md={7.5} xs={12}>
@@ -90,7 +93,7 @@ const BasicLayout = ({ root }: LayoutProps) => {
               <>
                 <ToolsPanel closeHandler={closeMessagesBox} />
                 <Divider sx={sxDivider} />
-                <MessagesList />
+                <MessagesList sx={{ height: sectionHeight }} />
                 <Divider sx={sxDivider} />
                 <MessageInput />
               </>

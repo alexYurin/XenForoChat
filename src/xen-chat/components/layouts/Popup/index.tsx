@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { styled } from '@mui/material/styles'
 import { Paper, Grid, Box, Divider, SxProps } from '@mui/material'
 import {
@@ -15,6 +15,7 @@ import { useChatStore } from '@app/store'
 import type { LayoutProps } from '@app/components/layouts/types'
 
 const PopupLayout = ({ root, closeApp }: LayoutProps) => {
+  const rootHeight = useChatStore(state => state.rootHeight)
   const currentRoom = useChatStore(state => state.currentRoom)
 
   const [isVisibleMessagesBox, setVisibleMessagesBox] = useState(
@@ -38,8 +39,8 @@ const PopupLayout = ({ root, closeApp }: LayoutProps) => {
     setMinimize(isMinimize)
   }
 
-  // @TODO Calculate
-  const maxContentHeight = root.offsetHeight - 32
+  const accountDetailRef = useRef<HTMLDivElement>(null)
+  const roomSearchRef = useRef<HTMLFormElement>(null)
 
   // @TODO Replace in styles
   const sxWrapperProps: SxProps = {
@@ -89,6 +90,12 @@ const PopupLayout = ({ root, closeApp }: LayoutProps) => {
     opacity: 0.5,
   }
 
+  const accountDetailHeight = accountDetailRef?.current?.offsetHeight || 0
+  const roomSearchHeight = roomSearchRef?.current?.offsetHeight || 0
+
+  const sectionHeight =
+    rootHeight! - (accountDetailHeight + roomSearchHeight + 32)
+
   return (
     <Box sx={sxWrapperProps}>
       <AppControl
@@ -101,11 +108,11 @@ const PopupLayout = ({ root, closeApp }: LayoutProps) => {
           <Grid container height="100%">
             <StyledRoomsBox item xs={12}>
               <Paper elevation={0} sx={sxSectionProps}>
-                <AccountDetail />
+                <AccountDetail elRef={accountDetailRef} />
                 <Divider sx={sxDivider} />
-                <RoomSearch />
+                <RoomSearch elRef={roomSearchRef} />
                 <Divider sx={sxDivider} />
-                <RoomsList containerHeight={maxContentHeight} />
+                <RoomsList sx={{ height: sectionHeight }} />
               </Paper>
             </StyledRoomsBox>
             <StyledMessagesBox item xs={12}>
@@ -117,7 +124,7 @@ const PopupLayout = ({ root, closeApp }: LayoutProps) => {
                       closeHandler={closeMessagesBox}
                     />
                     <Divider sx={sxDivider} />
-                    <MessagesList containerHeight={maxContentHeight} />
+                    <MessagesList sx={{ height: sectionHeight - 18 }} />
                     <Divider sx={sxDivider} />
                     <MessageInput />
                   </>

@@ -1,5 +1,5 @@
 import { useRef, useEffect } from 'react'
-import { List, LinearProgress, Box } from '@mui/material'
+import { List, SxProps } from '@mui/material'
 import Messages from './Messages'
 import { useChatStore } from '@app/store'
 import { XenChatMode } from '@app/enums'
@@ -7,11 +7,11 @@ import { XenChatMode } from '@app/enums'
 // @TODO Decompose
 // @TODO Optimize
 
-export type MessageListProps = {
-  containerHeight?: number
+export type MessagesListProps = {
+  sx?: SxProps
 }
 
-const MessagesList = ({ containerHeight }: MessageListProps) => {
+const MessagesList = ({ sx }: MessagesListProps) => {
   const mode = useChatStore(state => state.mode)
 
   const loadMoreCurrentRoomMessages = useChatStore(
@@ -65,14 +65,6 @@ const MessagesList = ({ containerHeight }: MessageListProps) => {
         overflowX: 'auto',
         opacity: isLoadingMessages ? 0.5 : 1,
         pointerEvents: isLoadingMessages ? 'none' : undefined,
-        height:
-          mode === XenChatMode.POPUP
-            ? `${containerHeight! - 176}px`
-            : undefined,
-        maxHeight:
-          mode === XenChatMode.POPUP
-            ? `${containerHeight! - 176}px`
-            : undefined,
         '&::-webkit-scrollbar': {
           width: '0.4em',
         },
@@ -84,6 +76,7 @@ const MessagesList = ({ containerHeight }: MessageListProps) => {
           borderRadius: 6,
           backgroundColor: 'rgba(0,0,0,0.15)',
         },
+        ...sx,
       }}
     >
       <Messages />

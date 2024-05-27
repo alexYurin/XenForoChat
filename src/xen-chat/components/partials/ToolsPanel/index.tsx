@@ -6,13 +6,19 @@ import ArrowBackIosNewOutlinedIcon from '@mui/icons-material/ArrowBackIosNewOutl
 import { sxButton } from '@app/themes/components/button'
 import { useChatStore } from '@app/store'
 import { XenChatMode } from '@app/enums'
+import { RefObject } from 'react'
 
 export type ToolsPanelProps = {
+  elRef?: RefObject<HTMLDivElement>
   isShowBackButton?: boolean
   closeHandler: () => void
 }
 
-const ToolsPanel = ({ isShowBackButton, closeHandler }: ToolsPanelProps) => {
+const ToolsPanel = ({
+  elRef,
+  isShowBackButton,
+  closeHandler,
+}: ToolsPanelProps) => {
   const mode = useChatStore(state => state.mode)
   const currentRoom = useChatStore(state => state.currentRoom)
 
@@ -38,7 +44,7 @@ const ToolsPanel = ({ isShowBackButton, closeHandler }: ToolsPanelProps) => {
   }))
 
   return (
-    <Paper elevation={0} sx={{ width: '100%' }}>
+    <Paper ref={elRef} elevation={0} sx={{ width: '100%' }}>
       <Box sx={{ display: 'flex', alignItems: 'center' }}>
         <StyledBackButton
           sx={{

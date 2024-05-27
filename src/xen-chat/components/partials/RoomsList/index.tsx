@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react'
 import { Box, Button, CircularProgress, List, SxProps } from '@mui/material'
 import { Empty } from '@app/components/ui'
 import { useChatStore } from '@app/store'
@@ -5,22 +6,24 @@ import RoomsListItem from './RoomsListItem'
 import { sortRoomsByDate } from './helpers'
 import { XenChatMode } from '@app/enums'
 
+// @TODO Decompose
+
 export type RoomsListProps = {
-  containerHeight: number
+  sx?: SxProps
 }
 
-const RoomsList = ({ containerHeight }: RoomsListProps) => {
+const RoomsList = ({ sx }: RoomsListProps) => {
   const mode = useChatStore(state => state.mode)
   const isReady = useChatStore(state => state.isReady)
   const rooms = useChatStore(state => state.rooms)
   const setVisibleAddForm = useChatStore(state => state.setVisibleAddRoomForm)
+  const loadMoreRooms = useChatStore(state => state.loadMoreRooms)
+
+  const observerTarget = useRef<HTMLDivElement>(null)
 
   const onPressAddConversationButton = () => {
     setVisibleAddForm(true)
   }
-
-  // @TODO Calculate
-  const maxContentHeight = containerHeight - 132
 
   const sxListProps: SxProps = {
     width: '100%',
@@ -28,8 +31,6 @@ const RoomsList = ({ containerHeight }: RoomsListProps) => {
     bgcolor: 'background.paper',
     overflowX: 'hidden',
     overflowY: 'auto',
-    maxHeight:
-      mode === XenChatMode.POPUP ? maxContentHeight - 28 : maxContentHeight,
     '&::-webkit-scrollbar': {
       width: '0.4em',
     },
@@ -41,7 +42,29 @@ const RoomsList = ({ containerHeight }: RoomsListProps) => {
       borderRadius: 6,
       backgroundColor: 'rgba(0,0,0,0.15)',
     },
+    ...sx,
   }
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      entries => {
+        if (entries[0].isIntersecting && (rooms?.length ?? 0) > 0) {
+          loadMoreRooms()
+        }
+      },
+      { threshold: 1 },
+    )
+
+    if (observerTarget.current) {
+      observer.observe(observerTarget.current)
+    }
+
+    return () => {
+      if (observerTarget.current) {
+        observer.unobserve(observerTarget.current)
+      }
+    }
+  }, [observerTarget, rooms])
 
   const renderRooms = () => {
     if (rooms && rooms.length) {
@@ -69,19 +92,27 @@ const RoomsList = ({ containerHeight }: RoomsListProps) => {
     )
   }
 
-  if (isReady) {
-    return renderRooms()
-  }
-
   return (
-    <Box
-      display="flex"
-      justifyContent="center"
-      alignItems="center"
-      height="100%"
-    >
-      <CircularProgress color="primary" />
-    </Box>
+    <>
+      {isReady ? (
+        renderRooms()
+      ) : (
+        <Box
+          display="flex"
+          justifyContent="center"
+          alignItems="center"
+          height="100%"
+        >
+          <CircularProgress color="primary" />
+        </Box>
+      )}
+      <span
+        ref={observerTarget}
+        style={{
+          visibility: 'hidden',
+        }}
+      />
+    </>
   )
 }
 

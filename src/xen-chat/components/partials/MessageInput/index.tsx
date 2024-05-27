@@ -1,4 +1,10 @@
-import { KeyboardEventHandler, useState, useRef, useEffect } from 'react'
+import {
+  KeyboardEventHandler,
+  useState,
+  useRef,
+  useEffect,
+  RefObject,
+} from 'react'
 import { Editor, AttachmentFile } from '@app/components/ui'
 import DisplayAttachments from './DisplayAttachmets'
 import {
@@ -32,8 +38,12 @@ const ALLOW_EXTENSIONS = [
   'gif',
 ]
 
+export type MessageInputProps = {
+  elRef?: RefObject<HTMLDivElement>
+}
+
 // @TODO Decompose
-const MessageInput = () => {
+const MessageInput = ({ elRef }: MessageInputProps) => {
   const currentRoom = useChatStore(state => state.currentRoom)
 
   const sendMessage = useChatStore(state => state.sendMessage)
@@ -244,7 +254,11 @@ const MessageInput = () => {
   const isVisibleTools = attachments.length > 0 || inputMode !== 'default'
 
   return (
-    <Stack sx={{ position: 'relative' }} onKeyDown={onKeyDown}>
+    <Stack
+      ref={elRef}
+      sx={{ position: 'relative', mt: 'auto' }}
+      onKeyDown={onKeyDown}
+    >
       <DisplayAttachments
         isVisible={isVisibleTools}
         title={toolsTitle}

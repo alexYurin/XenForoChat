@@ -6,6 +6,7 @@ import type { PermissionsType } from './types'
 export type RoomModelType = {
   id: number
   title: string
+  note?: string
   isOwner: boolean
   createdAt: Date
   isStared: boolean

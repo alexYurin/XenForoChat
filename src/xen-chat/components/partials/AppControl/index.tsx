@@ -19,6 +19,8 @@ const AppControl = ({
   const user = useChatStore(state => state.user)
   const rooms = useChatStore(state => state.rooms)
 
+  const link = 'https://xnf-demo.updemo.site/index.php?conversations/'
+
   const changeMinimize = () => {
     if (!isMinimize) {
       return
@@ -67,7 +69,7 @@ const AppControl = ({
           <IconButton onClick={minimize} sx={{ ml: 'auto' }}>
             <HorizontalRuleOutlinedIcon />
           </IconButton>
-          <IconButton component="a" href={user?.view_url} target="_blank">
+          <IconButton component="a" href={link} target="_blank">
             <OpenInNewOutlinedIcon />
           </IconButton>
           <IconButton onClick={closeHandler}>

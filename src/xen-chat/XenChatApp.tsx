@@ -20,8 +20,10 @@ export type XenChatAppProps = {
 }
 
 const INTERVAL = 5000 // ms
+const DELTA_PADDING = 32 // px
 
 export default function XenChatApp({ root, mode, closeApp }: XenChatAppProps) {
+  const setRootHeight = useChatStore(state => state.setRootHeight)
   const setMode = useChatStore(state => state.setMode)
   const fetchUser = useChatStore(state => state.fetchUser)
   const setReady = useChatStore(state => state.setReady)
@@ -54,6 +56,10 @@ export default function XenChatApp({ root, mode, closeApp }: XenChatAppProps) {
     clearTimeout(timeoutId)
   }
 
+  const onResize = () => {
+    setRootHeight(root.offsetHeight - DELTA_PADDING)
+  }
+
   const init = async () => {
     setMode(mode)
     Promise.all([fetchUser()]).then(ready)
@@ -62,7 +68,15 @@ export default function XenChatApp({ root, mode, closeApp }: XenChatAppProps) {
   useEffect(() => {
     init()
 
+    setRootHeight(root.offsetHeight - DELTA_PADDING)
+
     return unsubscribe
+  }, [])
+
+  useEffect(() => {
+    window.addEventListener('resize', onResize)
+
+    return () => window.removeEventListener('resize', onResize)
   }, [])
 
   return (

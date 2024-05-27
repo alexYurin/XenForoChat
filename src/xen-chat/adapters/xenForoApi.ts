@@ -34,6 +34,7 @@ export function adoptRoom(conversation: ConversationType) {
   return new Room({
     id: conversation.conversation_id,
     title: conversation.title,
+    note: conversation.note,
     isOwner: conversation.user_id === user?.user_id,
     isStared: conversation.is_starred,
     isUnread: conversation.is_unread,
