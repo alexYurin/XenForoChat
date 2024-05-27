@@ -180,10 +180,8 @@ const useChatStore = create<ChatState>()(
             return
           }
 
-          const convertedPayload = payload
-            .replace('&', '|')
-            .replace('?', '|')
-            .split('|')
+          const convertedPayload =
+            payload?.replace('&', '|')?.replace('?', '|')?.split('|') || []
 
           convertedPayload.forEach(async res => {
             if (res === 'add') {
@@ -415,10 +413,21 @@ const useChatStore = create<ChatState>()(
         set(() => ({ currentRoom: null }))
       },
       setCurrentRoom: async (roomId, messagesPage = 0) => {
+        const { getRoom } = useXenForoApiStore.getState()
         const prevRoomId = get().currentRoom?.model?.id
 
-        const currentRoom =
+        let isOutRangeRoom = false
+
+        let currentRoom =
           get().rooms?.find(room => room.model.id === roomId) || null
+
+        if (!currentRoom) {
+          const extraResponse = await getRoom(roomId)
+
+          isOutRangeRoom = true
+
+          currentRoom = extraResponse.room
+        }
 
         const lastPage = currentRoom?.model.lastPageNumber || messagesPage
 
@@ -437,6 +446,12 @@ const useChatStore = create<ChatState>()(
           const response = await fetchRoomMessages(roomId, lastPage)
 
           const currentRoomMessages = response.messages.toReversed()
+
+          if (isOutRangeRoom) {
+            set(() => ({ rooms: [currentRoom, ...(get().rooms || [])] }))
+
+            isOutRangeRoom = false
+          }
 
           set(() => ({
             currentRoom,

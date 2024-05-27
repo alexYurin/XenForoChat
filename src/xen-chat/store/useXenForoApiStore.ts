@@ -48,6 +48,11 @@ export interface XenForoApiState {
     rooms: Room[]
     pagination: { lastPage: number; currentPage: number; total: number }
   }>
+  getRoom: (roomId: number) => Promise<{
+    room: Room
+    messages: Message[]
+    pagination: { lastPage: number; currentPage: number; total: number }
+  }>
   addRoom: (params: RequestParamsAddConversation) => Promise<Room>
   updateRoom: (
     roomId: number,
@@ -145,6 +150,22 @@ const useXenForoApiStore = create<XenForoApiState>()(
           .then(response => ({
             rooms: response.data.conversations.map(conversation =>
               adoptRoom(conversation),
+            ),
+            pagination: {
+              currentPage: response.data.pagination.current_page,
+              lastPage: response.data.pagination.last_page,
+              total: response.data.pagination.total,
+            },
+          }))
+      },
+
+      getRoom: roomId => {
+        return get()
+          .api.conversations.get(roomId)
+          .then(response => ({
+            room: adoptRoom(response.data.conversation),
+            messages: response.data.messages.map(message =>
+              adoptMessage(message),
             ),
             pagination: {
               currentPage: response.data.pagination.current_page,
