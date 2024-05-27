@@ -460,8 +460,8 @@ const useChatStore = create<ChatState>()(
           } else {
             const pathname = window.location.pathname
               .replace('/add', '')
-              .replace('/index.html', '')
-              .replace('/index.php', '')
+              .replace('index.html', '')
+              .replace('index.php', '')
               .replace(`${user?.username}.${prevRoomId ?? roomId}`, '')
 
             const roomUrl = `${pathname}${user?.username}.${roomId}`
