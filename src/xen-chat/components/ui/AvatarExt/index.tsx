@@ -11,7 +11,6 @@ import {
 import { stringToColor, stringToInitials } from '@app/helpers'
 import { StyledBadge } from './styles'
 import StarPurple500OutlinedIcon from '@mui/icons-material/StarPurple500Outlined'
-import { XenChatMode } from '@app/enums'
 
 // @TODO Decompose
 

@@ -25,6 +25,7 @@ import { sxButton } from '@app/themes/components/button'
 import { sxInput } from '@app/themes/components/input'
 import { AvatarExt, MembersAutocomplete } from '@app/components/ui'
 import { UserType } from '@app/api/xenforo/types'
+import { displayName } from '@app/helpers'
 
 // @TODO Decompose
 // @TODO Need refactor
@@ -41,6 +42,8 @@ const SettingsRoomForm = () => {
   const setUnreadRoom = useChatStore(state => state.setUnreadRoom)
 
   const inviteRoom = useChatStore(state => state.inviteRoom)
+
+  const noteRoom = useChatStore(state => state.noteRoom)
 
   const setVisibleLeaveDialog = useChatStore(
     state => state.setVisibleLeaveRoomDialog,
@@ -132,10 +135,11 @@ const SettingsRoomForm = () => {
 
     const isChangeSettings =
       (title !== undefined && title !== room?.model.title) ||
-      (note !== undefined && note !== room?.model.note) ||
       (isLockConversation !== undefined &&
         isLockConversation !== !room?.model.isOpenConversation) ||
       (isOpenInvite !== undefined && isOpenInvite !== room?.model.isOpenInvite)
+
+    const isChangeNote = note !== undefined && note !== room?.model.note
 
     const isChangeStared =
       isStared !== undefined && isStared !== room!.model.isStared
@@ -149,10 +153,13 @@ const SettingsRoomForm = () => {
       await inviteRoom(room!.model.id, users)
     }
 
+    if (isChangeNote) {
+      await noteRoom(room!.model.id, note)
+    }
+
     if (isChangeSettings) {
       await updateRoom(room!.model.id, {
         title: title || room?.model.title,
-        note: note || room?.model.note,
         conversation_open: !isLockConversation ? '1' : '0',
         open_invite: isOpenInvite ? '1' : '0',
       })
@@ -235,7 +242,10 @@ const SettingsRoomForm = () => {
                 color="#1976d2"
                 sx={{ cursor: 'pointer', textDecoration: 'none' }}
               >
-                {room?.model.owner.model.name} ({room?.model.owner.model.title})
+                {displayName(
+                  room?.model.owner.model.name,
+                  room?.model.owner.model.title,
+                )}
               </Typography>
             </ListItem>
             <ListItem sx={{ paddingY: 0.5 }}>
@@ -271,8 +281,8 @@ const SettingsRoomForm = () => {
             name="note"
             label="Note"
             type="text"
+            multiline
             fullWidth
-            disabled={!isCanEdit}
             defaultValue={room?.model.note}
             value={note}
             onChange={handleChangeNote}
@@ -297,7 +307,7 @@ const SettingsRoomForm = () => {
               return (
                 <Chip
                   key={member.model.id}
-                  label={`${member.model.name} (${member.model.title})`}
+                  label={displayName(member.model.name, member.model.title)}
                   sx={{ fontSize: 12, fontWeight: 500, cursor: 'pointer' }}
                   component="a"
                   title={member.model.title}

@@ -10,9 +10,10 @@ import {
   IconButton,
   styled,
 } from '@mui/material'
+import stc from 'string-to-color'
 import { AvatarExt } from '@app/components/ui'
 import ReactionPanel from './ReactionPanel'
-import { dateFromNow, fromHTML, stringToColor } from '@app/helpers'
+import { dateFromNow, displayName, fromHTML, stringToColor } from '@app/helpers'
 import ReplyOutlinedIcon from '@mui/icons-material/ReplyOutlined'
 import EditNoteOutlinedIcon from '@mui/icons-material/EditNoteOutlined'
 import CheckOutlinedIcon from '@mui/icons-material/CheckOutlined'
@@ -129,12 +130,18 @@ const MessagesListItem = ({ detail }: MessagesListItemProps) => {
         borderRadius: '16px',
       }}
     >
-      <AvatarExt
-        src={detail.member.model.avatar}
-        avatarText={detail.member.model.name}
-        isOnline={isRevert}
-        sx={{ p: 0 }}
-      />
+      <a
+        href={detail.member.model.link}
+        target="_blank"
+        style={{ textDecoration: 'none' }}
+      >
+        <AvatarExt
+          src={detail.member.model.avatar}
+          avatarText={detail.member.model.title || detail.member.model.name}
+          isOnline={isRevert}
+          sx={{ p: 0 }}
+        />
+      </a>
       <Box
         display="flex"
         flexDirection="column"
@@ -174,11 +181,20 @@ const MessagesListItem = ({ detail }: MessagesListItemProps) => {
           mb={0.2}
           alignSelf={isRevert ? 'flex-end' : 'flex-start'}
           fontSize={14}
+          component="a"
+          href={detail.member.model.link}
+          target="_blank"
           fontWeight={500}
-          color={stringToColor('UserName')}
-          sx={{ overflowWrap: 'break-word', maxWidth: '100%' }}
+          color={stc(
+            displayName(detail.member.model.name, detail.member.model.title),
+          )}
+          sx={{
+            overflowWrap: 'break-word',
+            textDecoration: 'none',
+            maxWidth: '100%',
+          }}
         >
-          {detail.member.model.name}
+          {detail.member.model.title || detail.member.model.name}
         </Typography>
 
         {detail.attachments.length > 0 && (

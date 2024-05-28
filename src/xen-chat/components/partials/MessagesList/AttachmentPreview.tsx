@@ -10,8 +10,8 @@ const AttachmentPreview = ({ detail }: AttachmentPreviewProps) => {
   const title = (
     <Button
       component="a"
-      href={detail.model.url}
-      download
+      href={`data:${detail.model.url}`}
+      download={detail.model.name}
       sx={{ mt: 0.5, p: 0.5, gap: 0.5 }}
     >
       <CloudDownloadOutlinedIcon />
@@ -34,7 +34,7 @@ const AttachmentPreview = ({ detail }: AttachmentPreviewProps) => {
       <Box display="flex" flexDirection="column" flex={1}>
         <Button
           component="a"
-          href={detail.model.thumbnailUrl}
+          href={detail.model.url}
           target="_blank"
           title={detail.model.name}
           sx={{ p: 0 }}

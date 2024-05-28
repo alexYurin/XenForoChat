@@ -94,6 +94,7 @@ export interface ChatState {
     params: RequestParamsUpdateConversation,
   ) => Promise<void>
   inviteRoom: (roomId: number, users: UserType[]) => Promise<void>
+  noteRoom: (roomId: number, text: string) => Promise<void>
   leaveRoom: (roomId: number) => Promise<void>
   currentRoomMessages: Message[] | null
   currentRoomMessagesPage: number
@@ -497,6 +498,10 @@ const useChatStore = create<ChatState>()(
         try {
           const newRoom = await addRoom(params)
 
+          if (params.note) {
+            await get().noteRoom(newRoom.model.id, params.note)
+          }
+
           set(() => ({
             rooms: [...(get().rooms || []), newRoom],
           }))
@@ -568,6 +573,31 @@ const useChatStore = create<ChatState>()(
               currentRoom: updatedRoom,
             }))
           }
+        } catch (error) {
+          const responseError = error as ResponseErrorType
+          set(() => ({ error: createError(responseError) }))
+        }
+      },
+
+      noteRoom: async (roomId, text) => {
+        const { noteRoom } = useXenForoApiStore.getState()
+
+        try {
+          const updatedRoom = await noteRoom(roomId, text)
+
+          if (get().currentRoom) {
+            set(() => ({ currentRoom: updatedRoom }))
+          }
+
+          set(() => ({
+            rooms: (get().rooms || []).map(room => {
+              if (room.model.id === roomId) {
+                return updatedRoom
+              }
+
+              return room
+            }),
+          }))
         } catch (error) {
           const responseError = error as ResponseErrorType
           set(() => ({ error: createError(responseError) }))

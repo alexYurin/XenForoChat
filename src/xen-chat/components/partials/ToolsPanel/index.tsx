@@ -1,4 +1,11 @@
-import { Paper, Box, IconButton, styled } from '@mui/material'
+import {
+  Paper,
+  Box,
+  IconButton,
+  styled,
+  Typography,
+  SxProps,
+} from '@mui/material'
 import { AvatarExt, AvatarGroupExt } from '@app/components/ui'
 import ToolsMenuButton from './ToolsMenuButton'
 import ToolsSettingsButton from './ToolsSettingsButton'
@@ -21,6 +28,28 @@ const ToolsPanel = ({
 }: ToolsPanelProps) => {
   const mode = useChatStore(state => state.mode)
   const currentRoom = useChatStore(state => state.currentRoom)
+
+  const sxTitle: SxProps = {
+    display: 'inline-block',
+    textOverflow: 'ellipsis',
+  }
+
+  const titleSize = currentRoom?.model.note ? 14 : 18
+  const avatarSize = currentRoom?.model.note ? 55 : 50
+  const minHeight = currentRoom?.model.note ? 'unset' : 82
+
+  const title = (
+    <Box display="flex" flexDirection="column">
+      <Typography noWrap fontSize={titleSize} fontWeight={500} sx={sxTitle}>
+        {currentRoom?.model.title}
+      </Typography>
+      {currentRoom?.model.note && (
+        <Typography noWrap fontSize={12} color="#f47d02" sx={sxTitle}>
+          {currentRoom?.model.note}
+        </Typography>
+      )}
+    </Box>
+  )
 
   const members = (
     <AvatarGroupExt
@@ -46,8 +75,12 @@ const ToolsPanel = ({
   }))
 
   return (
-    <Paper ref={elRef} elevation={0} sx={{ width: '100%' }}>
-      <Box sx={{ display: 'flex', alignItems: 'center' }}>
+    <Paper
+      ref={elRef}
+      elevation={0}
+      sx={{ display: 'flex', alignItems: 'center', width: '100%', minHeight }}
+    >
+      <Box sx={{ display: 'flex', alignItems: 'center', width: '100%' }}>
         <StyledBackButton
           sx={{
             ...sxButton,
@@ -60,12 +93,12 @@ const ToolsPanel = ({
           <ArrowBackIosNewOutlinedIcon />
         </StyledBackButton>
         <AvatarExt
-          label={currentRoom?.model.title}
+          label={title}
           isStared={currentRoom?.model.isStared}
           badgeCount={currentRoom?.model.isUnread ? 1 : 0}
           avatarBadgeVariant="dot"
           description={members}
-          sxAvatar={{ width: 50, height: 50 }}
+          sxAvatar={{ width: avatarSize, height: avatarSize }}
           sxLabel={{ fontSize: 18 }}
           hiddenAvatar={mode === XenChatMode.POPUP}
           hiddenAvatarXS={true}

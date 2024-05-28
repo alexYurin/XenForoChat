@@ -138,6 +138,7 @@ const AddRoomForm = ({ onClose }: AddRoomFormProps) => {
             id="add-conversation-none"
             name="note"
             label="Note"
+            multiline
             type="text"
             fullWidth
             variant="outlined"
@@ -150,6 +151,7 @@ const AddRoomForm = ({ onClose }: AddRoomFormProps) => {
             id="add-conversation-message"
             name="message"
             label="Message"
+            multiline
             type="text"
             fullWidth
             variant="outlined"

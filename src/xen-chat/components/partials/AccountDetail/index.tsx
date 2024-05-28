@@ -20,7 +20,18 @@ const AccountDetail = ({ elRef }: AccountDetailProps) => {
 
   const titleElement = (
     <Box sx={{ display: 'flex', flexFlow: 'nowrap' }}>
-      <Typography noWrap={true} sx={{ fontSize: 18, fontWeight: 500 }}>
+      <Typography
+        component="a"
+        href={user?.view_url}
+        target="blank"
+        noWrap={true}
+        sx={{
+          fontSize: 18,
+          fontWeight: 500,
+          textDecoration: 'none',
+          color: 'black',
+        }}
+      >
         {user?.username}
       </Typography>
     </Box>
@@ -31,11 +42,12 @@ const AccountDetail = ({ elRef }: AccountDetailProps) => {
       {isReady ? (
         <AvatarExt
           isOnline
-          src={user?.avatar_urls[0]}
+          src={user?.avatar_urls.h}
           avatarText={user?.username}
           label={titleElement}
+          description={user?.user_title}
           sx={{ paddingX: 1.4, paddingY: 1.13, pr: 1 }}
-          sxAvatar={{ width: 50, height: 50 }}
+          sxAvatar={{ width: 63, height: 63 }}
         >
           <Button
             aria-label="Create"
@@ -52,7 +64,9 @@ const AccountDetail = ({ elRef }: AccountDetailProps) => {
           display="flex"
           alignItems="center"
           gap={2}
-          sx={{ paddingX: 1.4, paddingY: 1.13, pr: 3 }}
+          component="a"
+          href={user?.view_url}
+          sx={{ paddingX: 1.4, paddingY: 1.13, pr: 3, cursor: 'pointer' }}
         >
           <Skeleton variant="circular" width={50} height={50} />
           <Skeleton variant="rounded" width={100} height={20} />

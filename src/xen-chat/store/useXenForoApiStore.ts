@@ -62,6 +62,7 @@ export interface XenForoApiState {
     roomId: number,
     usersIds: number[],
   ) => Promise<ResponseSuccessType>
+  noteRoom: (roomId: number, test: string) => Promise<Room>
   leaveRoom: (
     roomId: number,
     params: { ignore: boolean },
@@ -191,6 +192,12 @@ const useXenForoApiStore = create<XenForoApiState>()(
         return get()
           .api.conversations.delete(roomId, params)
           .then(response => response.data)
+      },
+
+      noteRoom: (roomId, text) => {
+        return get()
+          .api.conversations.note(roomId, { note: text })
+          .then(response => adoptRoom(response.data.conversation))
       },
 
       inviteRoom: (roomId, usersIds) => {

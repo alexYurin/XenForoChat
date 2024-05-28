@@ -114,6 +114,24 @@ export class ConversationsApiService extends BaseXenForoApiService {
     )
   }
 
+  public async note(
+    conversation_id: number,
+    params: {
+      note: string
+    },
+  ) {
+    const requestParams = qs.stringify(params)
+
+    return this.network({
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+    }).post<ResponseConversationType & ResponseSuccessType>(
+      `/${ConversationsApiService.path}/${conversation_id}/note`,
+      requestParams,
+    )
+  }
+
   public async markRead(
     conversation_id: number,
     params?: Partial<{

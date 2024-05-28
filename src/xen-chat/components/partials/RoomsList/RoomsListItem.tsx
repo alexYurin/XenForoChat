@@ -75,6 +75,8 @@ const RoomsListItem = ({ detail }: RoomsListItemProps) => {
                   pb={0.2}
                   noWrap
                   fontSize={11}
+                  fontWeight={500}
+                  color="#f47d02"
                   sx={{
                     display: 'inline-block',
                     maxWidth: '90%',
@@ -82,7 +84,7 @@ const RoomsListItem = ({ detail }: RoomsListItemProps) => {
                     textOverflow: 'ellipsis',
                   }}
                 >
-                  Note: Note text for room
+                  {detail.note}
                 </Typography>
               )}
             </>
