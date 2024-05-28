@@ -94,7 +94,9 @@ const ToolsPanel = ({
         </StyledBackButton>
         <AvatarExt
           label={title}
+          avatarText={currentRoom?.model.title}
           isStared={currentRoom?.model.isStared}
+          src={currentRoom?.model.owner.model.avatar}
           badgeCount={currentRoom?.model.isUnread ? 1 : 0}
           avatarBadgeVariant="dot"
           description={members}

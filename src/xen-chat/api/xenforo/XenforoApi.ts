@@ -9,13 +9,13 @@ import {
 
 import type { ResponseErrorType } from '@app/api/xenforo/types'
 
-const BASE_URL = 'https://xnf-demo.updemo.site/api/'
-
 type XenforoApiOptionsType = {
+  baseApiUrl?: string
   token?: string
 }
 
 export default class XenforoApi {
+  private baseApiUrl?: string
   private token?: string
 
   public user: UserApiService
@@ -24,6 +24,7 @@ export default class XenforoApi {
   public attachments: AttachmentsApiService
 
   constructor(options: XenforoApiOptionsType | undefined = undefined) {
+    this.baseApiUrl = options?.baseApiUrl
     this.token = options?.token
 
     this.user = new UserApiService(this.network.bind(this))
@@ -32,6 +33,10 @@ export default class XenforoApi {
     this.conversationMessages = new ConversationMessagesApiService(
       this.network.bind(this),
     )
+  }
+
+  public updateApiUrl(url: string) {
+    this.baseApiUrl = url
   }
 
   public updateToken(token: string) {
@@ -43,7 +48,7 @@ export default class XenforoApi {
 
     return http<ResponseErrorType>({
       ...requestOptions,
-      baseURL: BASE_URL,
+      baseURL: this.baseApiUrl,
       headers: {
         ...(requestOptions.headers || {}),
         'XF-Api-Key': this.token,

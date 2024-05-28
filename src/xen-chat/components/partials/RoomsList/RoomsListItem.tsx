@@ -67,6 +67,7 @@ const RoomsListItem = ({ detail }: RoomsListItemProps) => {
           avatarBadgeVariant="dot"
           isStared={detail.isStared}
           avatarText={detail.title}
+          src={detail.owner.model.avatar}
           label={
             <>
               {label}

@@ -18,9 +18,11 @@ import {
 
 export interface XenForoApiState {
   api: XenforoApi
+  apiUrl: string | null
   fetchMe: () => Promise<UserType>
   findUser: (username: string) => Promise<ResponseFindUsernameType>
   token: string | null
+  updateApiUrl: (apiUrl: string) => void
   updateToken: (token: string) => void
   fetchRoomMessages: (
     roomId: number,
@@ -93,6 +95,15 @@ const useXenForoApiStore = create<XenForoApiState>()(
           .api.user.find(username)
           .then(response => response.data)
       },
+
+      apiUrl: null,
+
+      updateApiUrl: apiUrl =>
+        set(() => {
+          get().api.updateApiUrl(apiUrl)
+
+          return { apiUrl }
+        }),
 
       token: null,
 

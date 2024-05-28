@@ -13,6 +13,7 @@ import { XenChatMode } from './enums'
 */
 
 /* @attributes
+  DATA_SET['data-api-url'] - Атрибут для адреса api в popup режиме
   DATA_SET['data-id'] - Атрибут кнопки тригера для id dom-элемента приложения в popup режиме
   DATA_SET['data-token'] - Атрибут кнопки тригера для передачи  токена в приложения в popup режиме
   DATA_SET['data-visible'] - Атрибут кнопки тригера, отражаущий состояние активности приложения в popup режиме
@@ -22,6 +23,7 @@ import { XenChatMode } from './enums'
   Все пропсы передаются в кастомный тег элемента (CUSTOM_ELEMENT_TAG) в виде атрибутов
   с соответсвующим названием (без приставки 'data-')
 
+  api-url: string - url для api
   token: string - Ключ авторизации в xenForo. Передается в заголовок XF-Api-Key при запросах к апи
   mode?: 'basic' | 'popup' - Параметр переключающий режимы окна чата.
 */
@@ -39,6 +41,7 @@ const CLASSNAMES = {
 
 const DATA_SET = {
   id: 'data-id',
+  apiUrl: 'data-api-url',
   token: 'data-token',
   visible: 'data-visible',
 }
@@ -50,7 +53,7 @@ export default class XenChatElement extends HTMLElement {
   modes = [XenChatMode.BASIC, XenChatMode.POPUP]
 
   static get observedAttributes() {
-    return ['token', 'mode']
+    return ['api-url', 'token', 'mode']
   }
 
   async render() {
@@ -99,6 +102,10 @@ export default class XenChatElement extends HTMLElement {
         useXenForoApiStore.getState().updateToken(newValue)
 
         break
+
+      case 'api-url': {
+        useXenForoApiStore.getState().updateApiUrl(newValue)
+      }
 
       case 'mode': {
         if (this.isMode(newValue)) {
@@ -175,8 +182,13 @@ const connectTriggers = (event: Event) => {
   const target = event.target as HTMLElement
   const trigger = target.closest(SELECTORS.trigger)
   const id = trigger?.getAttribute(DATA_SET.id)
+  const apiUrl = trigger?.getAttribute(DATA_SET.apiUrl)
   const token = trigger?.getAttribute(DATA_SET.token)
   const isVisible = trigger?.hasAttribute(DATA_SET.visible)
+
+  if (!apiUrl) {
+    throw Error('Attribute "data-api-url" must provided')
+  }
 
   if (!token) {
     throw Error('Attribute "data-token" must provided')
@@ -203,6 +215,7 @@ const connectTriggers = (event: Event) => {
   } else {
     const customElement = document.createElement(CUSTOM_ELEMENT_TAG)
 
+    customElement.setAttribute('api-url', apiUrl)
     customElement.setAttribute('token', token)
     customElement.setAttribute('mode', 'popup')
     customElement.setAttribute('id', id)
