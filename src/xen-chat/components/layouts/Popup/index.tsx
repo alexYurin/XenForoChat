@@ -17,6 +17,7 @@ import type { LayoutProps } from '@app/components/layouts/types'
 const PopupLayout = ({ root, closeApp }: LayoutProps) => {
   const rootHeight = useChatStore(state => state.rootHeight)
   const currentRoom = useChatStore(state => state.currentRoom)
+  const setRootHeight = useChatStore(state => state.setRootHeight)
 
   const [isVisibleMessagesBox, setVisibleMessagesBox] = useState(
     Boolean(currentRoom),
@@ -37,6 +38,8 @@ const PopupLayout = ({ root, closeApp }: LayoutProps) => {
     root.classList.toggle('minimize')
 
     setMinimize(isMinimize)
+
+    setTimeout(() => setRootHeight(root.offsetHeight))
   }
 
   const accountDetailRef = useRef<HTMLDivElement>(null)
