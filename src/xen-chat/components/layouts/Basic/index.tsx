@@ -34,7 +34,7 @@ const BasicLayout = () => {
   // @TODO Replace in styles
   const sxContainerProps: SxProps = {
     position: 'relative',
-    p: 2,
+    p: 0,
     width: '100%',
     height: '100%',
     maxHeight: rootHeight,
@@ -46,7 +46,7 @@ const BasicLayout = () => {
     flexDirection: 'column',
     height: '100%',
     overflow: 'hidden',
-    borderRadius: 4,
+    borderRadius: 0,
   }
 
   const StyledRoomsBox = styled(Grid)(({ theme }) => ({
@@ -57,9 +57,11 @@ const BasicLayout = () => {
     [theme.breakpoints.down('md')]: {
       display: isVisibleMessagesBox || isShowMessagesContent ? 'grid' : 'none',
       position: 'absolute',
-      top: 8,
-      left: 8,
-      width: 'calc(100% - 24px)',
+      top: 0,
+      left: 0,
+      paddingLeft: '0 !important',
+      paddingTop: '0 !important',
+      width: '100%',
       zIndex: 2,
     },
   }))

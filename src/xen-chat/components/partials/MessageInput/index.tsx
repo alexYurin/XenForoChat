@@ -354,6 +354,28 @@ const MessageInput = ({ elRef }: MessageInputProps) => {
           sx={sxButton}
         />
 
+        <Typography
+          style={{
+            position: 'absolute',
+            margin: '0 6px',
+            marginLeft: !isRoomLock && !isDisableAttachments ? '70px' : '6px',
+            padding: '12px 0',
+            width: '100%',
+            borderRadius: '12px',
+            outline: 0,
+            fontFamily: 'roboto',
+            fontSize: '14px',
+            lineHeight: '22px',
+            opacity: 0.5,
+            visibility:
+              content.trim() && content.trim() !== '<p></p>'
+                ? 'hidden'
+                : 'visible',
+          }}
+        >
+          {isRoomLock ? 'Lock conversation' : 'Type here...'}
+        </Typography>
+
         <Editor
           inputMode={inputMode}
           content={content}
@@ -367,6 +389,7 @@ const MessageInput = ({ elRef }: MessageInputProps) => {
             borderRadius: '12px',
             outline: 0,
             fontFamily: 'roboto',
+            fontSize: '14px',
             lineHeight: '22px',
             visibility: isRoomLock || isLoading ? 'hidden' : 'visible',
           }}

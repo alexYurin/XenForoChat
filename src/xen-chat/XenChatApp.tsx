@@ -19,13 +19,14 @@ export type XenChatAppProps = {
   closeApp: () => void
 }
 
-const INTERVAL = 5000 // ms
-const DELTA_PADDING = 32 // px
+const INTERVAL = 30000 // ms
+const DELTA_PADDING = 0 // px
 
 export default function XenChatApp({ root, mode, closeApp }: XenChatAppProps) {
   const setRootHeight = useChatStore(state => state.setRootHeight)
   const setMode = useChatStore(state => state.setMode)
   const fetchUser = useChatStore(state => state.fetchUser)
+  const getRooms = useChatStore(state => state.getRooms)
   const setReady = useChatStore(state => state.setReady)
   const update = useChatStore(state => state.update)
   const handleApiUrl = useChatStore(state => state.handleApiUrl)
@@ -62,7 +63,7 @@ export default function XenChatApp({ root, mode, closeApp }: XenChatAppProps) {
 
   const init = async () => {
     setMode(mode)
-    Promise.all([fetchUser()]).then(ready)
+    Promise.all([fetchUser(), getRooms()]).then(ready)
   }
 
   useEffect(() => {

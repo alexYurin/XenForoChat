@@ -476,11 +476,15 @@ const useChatStore = create<ChatState>()(
           } else {
             const pathname = window.location.pathname
               .replace('/add', '')
+              .replace('/unread', '')
               .replace('index.html', '')
               .replace('index.php', '')
               .replace(`${user?.username}.${prevRoomId ?? roomId}`, '')
 
-            const roomUrl = `${pathname}${user?.username}.${roomId}`
+            const roomUrl = `${pathname}`.replace(
+              `.${prevRoomId || roomId}`,
+              `.${roomId}`,
+            )
 
             window.history.replaceState({}, document.title, roomUrl)
           }

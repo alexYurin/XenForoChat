@@ -53,6 +53,7 @@
     "@mui/material": "^5.15.18",
     "@tiptap/extension-color": "^2.4.0",
     "@tiptap/extension-list-item": "^2.4.0",
+    "@tiptap/extension-placeholder": "^2.4.0",
     "@tiptap/extension-text-style": "^2.4.0",
     "@tiptap/pm": "^2.4.0",
     "@tiptap/react": "^2.4.0",

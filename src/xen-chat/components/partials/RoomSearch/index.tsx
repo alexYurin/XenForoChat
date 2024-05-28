@@ -1,4 +1,5 @@
 import {
+  memo,
   useMemo,
   useEffect,
   useState,
@@ -19,12 +20,14 @@ export type RoomSearchProps = {
   elRef?: RefObject<HTMLFormElement>
 }
 
-const RoomSearch = ({ elRef }: RoomSearchProps) => {
-  const isReady = useChatStore(state => state.isReady)
+let isTouched = false
+
+const RoomSearch = memo(({ elRef }: RoomSearchProps) => {
   const rooms = useChatStore(state => state.rooms)
   const getRooms = useChatStore(state => state.getRooms)
+  const searchStoreString = useChatStore(state => state.searchString)
 
-  const [searchString, setSearchString] = useState('')
+  const [searchString, setSearchString] = useState(searchStoreString)
   const [isLoading, setLoading] = useState(false)
 
   const isDisableSearch =
@@ -33,7 +36,10 @@ const RoomSearch = ({ elRef }: RoomSearchProps) => {
   const search = useMemo(
     () =>
       debounce((query: string) => {
-        getRooms({ search: query }).finally(() => setLoading(false))
+        isTouched = true
+        getRooms({ search: query }).finally(() => {
+          setLoading(false)
+        })
       }, 400),
     [],
   )
@@ -45,9 +51,19 @@ const RoomSearch = ({ elRef }: RoomSearchProps) => {
   useEffect(() => {
     if (searchString.length > 0) {
       setLoading(true)
+
+      search(searchString)
     }
 
-    search(searchString)
+    if (isTouched && searchString.length === 0) {
+      getRooms({ search: searchString })
+        .finally(() => {
+          setLoading(false)
+        })
+        .finally(() => {
+          isTouched = false
+        })
+    }
   }, [searchString])
 
   return (
@@ -55,6 +71,9 @@ const RoomSearch = ({ elRef }: RoomSearchProps) => {
       ref={elRef}
       component="form"
       elevation={0}
+      onSubmit={event => {
+        event.preventDefault()
+      }}
       sx={{
         display: 'flex',
         alignItems: 'center',
@@ -85,6 +104,8 @@ const RoomSearch = ({ elRef }: RoomSearchProps) => {
         disabled={isDisableSearch}
         inputProps={{ 'aria-label': 'Search Conversations' }}
         onChange={onChange}
+        defaultValue={searchStoreString}
+        value={searchString}
       />
       <CircularProgress
         color="info"
@@ -93,6 +114,6 @@ const RoomSearch = ({ elRef }: RoomSearchProps) => {
       />
     </Paper>
   )
-}
+})
 
 export default RoomSearch

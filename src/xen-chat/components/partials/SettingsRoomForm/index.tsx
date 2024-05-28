@@ -69,9 +69,6 @@ const SettingsRoomForm = () => {
 
   const [isUnread, setUnread] = useState(room?.model.isUnread)
 
-  // TODO Add show notifications api
-  const [isShowNotifications, setShowNotifications] = useState(false)
-
   const isCanEdit = room?.model.permissions.isCanEdit
   const isCanInvite =
     room?.model.permissions.isCanInvite && room.model.isOpenInvite
@@ -180,8 +177,8 @@ const SettingsRoomForm = () => {
 
   useEffect(() => {
     if (room) {
-      setTitle(room.model.title)
-      setNote(room.model.note)
+      setTitle(title || room.model.title)
+      setNote(note || room.model.note)
       setLockConversation(!room.model.isOpenConversation)
       setOpenInvite(room.model.isOpenInvite)
       setStared(room.model.isStared)
@@ -390,18 +387,6 @@ const SettingsRoomForm = () => {
                 />
               </>
             )}
-            {/* <FormControlLabel
-              control={
-                <Switch
-                  name="notifications"
-                  checked={isShowNotifications}
-                  inputProps={{ 'aria-label': 'controlled' }}
-                  defaultChecked={isShowNotifications}
-                />
-              }
-              label="Notifications"
-              sx={sxFormLabelProps}
-            /> */}
             <FormControlLabel
               control={
                 <Switch

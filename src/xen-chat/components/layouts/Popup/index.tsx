@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { styled } from '@mui/material/styles'
 import { Paper, Grid, Box, Divider, SxProps } from '@mui/material'
 import {
@@ -24,7 +24,7 @@ const PopupLayout = ({ root, closeApp }: LayoutProps) => {
 
   const resetCurrentRoom = useChatStore(state => state.resetCurrentRoom)
 
-  const [isMinimize, setMinimize] = useState(false)
+  const [isMinimize, setMinimize] = useState(true)
 
   const isShowMessagesContent = currentRoom !== null
 
@@ -81,6 +81,7 @@ const PopupLayout = ({ root, closeApp }: LayoutProps) => {
     top: 0,
     left: 0,
     width: '100%',
+    height: '100%',
     zIndex: 2,
     [theme.breakpoints.down('md')]: {},
   }))
@@ -93,8 +94,7 @@ const PopupLayout = ({ root, closeApp }: LayoutProps) => {
   const accountDetailHeight = accountDetailRef?.current?.offsetHeight || 0
   const roomSearchHeight = roomSearchRef?.current?.offsetHeight || 0
 
-  const sectionHeight =
-    rootHeight! - (accountDetailHeight + roomSearchHeight + 32)
+  const sectionHeight = rootHeight! - (accountDetailHeight + roomSearchHeight)
 
   return (
     <Box sx={sxWrapperProps}>
@@ -124,7 +124,7 @@ const PopupLayout = ({ root, closeApp }: LayoutProps) => {
                       closeHandler={closeMessagesBox}
                     />
                     <Divider sx={sxDivider} />
-                    <MessagesList sx={{ height: sectionHeight - 18 }} />
+                    <MessagesList sx={{ height: sectionHeight - 82 }} />
                     <Divider sx={sxDivider} />
                     <MessageInput />
                   </>

@@ -15,13 +15,21 @@ import { ToggleButton, ToggleButtonGroup } from '@mui/material'
 import { Color } from '@tiptap/extension-color'
 import TextStyle from '@tiptap/extension-text-style'
 import StarterKit from '@tiptap/starter-kit'
+import Placeholder from '@tiptap/extension-placeholder'
 import FormatBoldIcon from '@mui/icons-material/FormatBold'
 import FormatItalicIcon from '@mui/icons-material/FormatItalic'
 import FormatStrikethroughOutlinedIcon from '@mui/icons-material/FormatStrikethroughOutlined'
 
 import './styles.scss'
 
-const extensions = [Color, TextStyle, StarterKit]
+const extensions = [
+  Color,
+  TextStyle,
+  StarterKit,
+  Placeholder.configure({
+    placeholder: 'Type here...',
+  }),
+]
 
 type MenuBarProps = {
   editor: EditorInstance | null
@@ -123,7 +131,11 @@ const Editor = ({
     }
 
     if (inputMode === 'default' && !content) {
-      editor?.commands.setContent('')
+      editor?.commands.clearContent(true)
+    }
+
+    if (content === '<p></p>') {
+      editor?.commands.clearContent(true)
     }
   }, [inputMode, content])
 
@@ -137,6 +149,7 @@ const Editor = ({
         editor={editor}
         onKeyDown={onEditorKeyDown}
         style={style}
+        placeholder="Type here..."
         disabled={disabled}
       />
     </>

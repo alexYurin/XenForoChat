@@ -3,6 +3,7 @@ import { AvatarExt } from '@app/components/ui'
 import { RoomModelType } from '@app/core/domain/Room'
 import { stripTagsFromHTML, dateFromNow } from '@app/helpers'
 import { useChatStore } from '@app/store'
+import { useRef } from 'react'
 
 export type RoomsListItemProps = {
   detail: RoomModelType
@@ -11,6 +12,8 @@ export type RoomsListItemProps = {
 const RoomsListItem = ({ detail }: RoomsListItemProps) => {
   const currentRoom = useChatStore(state => state.currentRoom)
   const setCurrentRoom = useChatStore(state => state.setCurrentRoom)
+
+  const ref = useRef<HTMLLIElement>(null)
 
   const onPressRoomItem = () => {
     setCurrentRoom(detail.id)
@@ -46,7 +49,11 @@ const RoomsListItem = ({ detail }: RoomsListItemProps) => {
   )
 
   return (
-    <ListItem sx={{ paddingX: 0, paddingY: 0 }} onClick={onPressRoomItem}>
+    <ListItem
+      ref={ref}
+      sx={{ paddingX: 0, paddingY: 0 }}
+      onClick={onPressRoomItem}
+    >
       <ListItemButton
         selected={isSelected}
         sx={{

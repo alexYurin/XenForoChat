@@ -1,10 +1,9 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, memo } from 'react'
 import { Box, Button, CircularProgress, List, SxProps } from '@mui/material'
 import { Empty } from '@app/components/ui'
 import { useChatStore } from '@app/store'
 import RoomsListItem from './RoomsListItem'
 import { sortRoomsByDate } from './helpers'
-import { XenChatMode } from '@app/enums'
 
 // @TODO Decompose
 
@@ -12,17 +11,23 @@ export type RoomsListProps = {
   sx?: SxProps
 }
 
-const RoomsList = ({ sx }: RoomsListProps) => {
-  const mode = useChatStore(state => state.mode)
+let lastScrollTop = 0
+
+const RoomsList = memo(({ sx }: RoomsListProps) => {
   const isReady = useChatStore(state => state.isReady)
   const rooms = useChatStore(state => state.rooms)
   const setVisibleAddForm = useChatStore(state => state.setVisibleAddRoomForm)
   const loadMoreRooms = useChatStore(state => state.loadMoreRooms)
 
   const observerTarget = useRef<HTMLDivElement>(null)
+  const listTarget = useRef<HTMLUListElement>(null)
 
   const onPressAddConversationButton = () => {
     setVisibleAddForm(true)
+  }
+
+  const onScroll = () => {
+    lastScrollTop = listTarget.current!.scrollTop
   }
 
   const sxListProps: SxProps = {
@@ -31,6 +36,8 @@ const RoomsList = ({ sx }: RoomsListProps) => {
     bgcolor: 'background.paper',
     overflowX: 'hidden',
     overflowY: 'auto',
+    position: !rooms?.length || !isReady ? 'absolute' : 'relative',
+    visibility: !rooms?.length || !isReady ? 'hidden' : 'visible',
     '&::-webkit-scrollbar': {
       width: '0.4em',
     },
@@ -44,6 +51,16 @@ const RoomsList = ({ sx }: RoomsListProps) => {
     },
     ...sx,
   }
+
+  useEffect(() => {
+    if (listTarget.current) {
+      listTarget.current.scrollTop = lastScrollTop
+    }
+
+    listTarget.current?.addEventListener('scroll', onScroll)
+
+    return () => listTarget.current?.removeEventListener('scroll', onScroll)
+  }, [listTarget])
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -66,37 +83,27 @@ const RoomsList = ({ sx }: RoomsListProps) => {
     }
   }, [observerTarget, rooms])
 
-  const renderRooms = () => {
-    if (rooms && rooms.length) {
-      return (
-        <List sx={sxListProps}>
-          {sortRoomsByDate(rooms).map(room => {
-            return <RoomsListItem key={room.model.id} detail={room.model} />
-          })}
-        </List>
-      )
-    }
-
-    return (
-      <Empty text="Conversation list is empty" sx={{ height: '100%' }}>
-        <Button
-          aria-label="Create"
-          size="large"
-          variant="outlined"
-          sx={{ borderRadius: 4, fontSize: 10 }}
-          onClick={onPressAddConversationButton}
-        >
-          Add conversation
-        </Button>
-      </Empty>
-    )
-  }
-
   return (
     <>
-      {isReady ? (
-        renderRooms()
-      ) : (
+      <List ref={listTarget} className="room-list" sx={sxListProps}>
+        {sortRoomsByDate(rooms || []).map(room => {
+          return <RoomsListItem key={room.model.id} detail={room.model} />
+        })}
+      </List>
+      {isReady && !rooms?.length && (
+        <Empty text="Conversation list is empty" sx={{ height: '100%' }}>
+          <Button
+            aria-label="Create"
+            size="large"
+            variant="outlined"
+            sx={{ borderRadius: 4, fontSize: 10 }}
+            onClick={onPressAddConversationButton}
+          >
+            Add conversation
+          </Button>
+        </Empty>
+      )}
+      {!isReady && (
         <Box
           display="flex"
           justifyContent="center"
@@ -114,6 +121,6 @@ const RoomsList = ({ sx }: RoomsListProps) => {
       />
     </>
   )
-}
+})
 
 export default RoomsList

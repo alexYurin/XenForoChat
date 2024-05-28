@@ -37,6 +37,7 @@ const SELECTORS = {
 
 const CLASSNAMES = {
   app: CUSTOM_ELEMENT_TAG,
+  minimize: 'minimize',
 }
 
 const DATA_SET = {
@@ -221,6 +222,7 @@ const connectTriggers = (event: Event) => {
     customElement.setAttribute('id', id)
 
     customElement.classList.add(CLASSNAMES.app)
+    customElement.classList.add(CLASSNAMES.minimize)
 
     document.body.appendChild(customElement)
 

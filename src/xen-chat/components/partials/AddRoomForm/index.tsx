@@ -109,7 +109,7 @@ const AddRoomForm = ({ onClose }: AddRoomFormProps) => {
       }}
     >
       <DialogTitle fontSize={16} textTransform="uppercase">
-        Add conversation
+        New conversation
       </DialogTitle>
       <DialogContent>
         <FormGroup sx={{ gap: 0.6 }}>

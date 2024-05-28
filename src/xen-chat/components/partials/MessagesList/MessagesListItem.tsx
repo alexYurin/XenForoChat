@@ -38,18 +38,6 @@ const MessagesListItem = ({ detail }: MessagesListItemProps) => {
 
   const setInputMode = useChatStore(state => state.setInputMode)
 
-  const [anchorElement, setAnchorElement] = useState<HTMLDivElement | null>(
-    null,
-  )
-
-  const handleClick: React.MouseEventHandler<HTMLDivElement> = event => {
-    setAnchorElement(event.currentTarget)
-  }
-
-  const handleClose = () => {
-    setAnchorElement(null)
-  }
-
   const handleReply = () => {
     setInputMode('reply', detail)
   }
@@ -57,10 +45,6 @@ const MessagesListItem = ({ detail }: MessagesListItemProps) => {
   const handleEdit = () => {
     setInputMode('edit', detail)
   }
-
-  const isOpenTools = Boolean(anchorElement)
-
-  const id = isOpenTools ? 'simple-popover' + detail.id : undefined
 
   const isRevert = detail.isAuthor
 
@@ -96,7 +80,6 @@ const MessagesListItem = ({ detail }: MessagesListItemProps) => {
       gap={2}
       height={16}
     >
-      {/*['😍', '😡'].map(react => `${react} `)*/} {/*reaction*/}
       <Typography
         display="flex"
         alignItems="center"
@@ -194,7 +177,7 @@ const MessagesListItem = ({ detail }: MessagesListItemProps) => {
             maxWidth: '100%',
           }}
         >
-          {detail.member.model.title || detail.member.model.name}
+          {detail.member.model.name}`Z`
         </Typography>
 
         {detail.attachments.length > 0 && (
@@ -211,9 +194,7 @@ const MessagesListItem = ({ detail }: MessagesListItemProps) => {
           </Box>
         )}
 
-        <ListItemButton
-          aria-describedby={id}
-          onClick={handleClick}
+        <Box
           sx={{
             display: 'flex',
             flexDirection: 'column',
@@ -241,6 +222,12 @@ const MessagesListItem = ({ detail }: MessagesListItemProps) => {
               width: '100%',
               minWidth: '150px',
               maxWidth: '100%',
+
+              '& a': {
+                color: '#1876d2',
+                textDecoration: 'none',
+                textTransform: 'uppercase',
+              },
 
               '& blockquote::before': {
                 content: `"${replyAuthor}"`,
@@ -278,14 +265,8 @@ const MessagesListItem = ({ detail }: MessagesListItemProps) => {
             />
           </Typography>
           {footer}
-        </ListItemButton>
+        </Box>
       </Box>
-      {/* <ReactionPanel
-        id={id}
-        isOpen={isOpenTools}
-        anchorElement={anchorElement}
-        handleClose={handleClose}
-      /> */}
     </StyledListItem>
   )
 }
