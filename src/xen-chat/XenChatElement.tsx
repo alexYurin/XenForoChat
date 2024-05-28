@@ -177,10 +177,13 @@ const isExistCustomElement = (token: string) => {
   }, false)
 }
 
-const connectTriggers = (event: Event) => {
-  event.preventDefault()
+const connectTriggers = (event: Event | HTMLElement) => {
+  if (event instanceof Event) {
+    event.preventDefault()
+  }
 
-  const target = event.target as HTMLElement
+  const target =
+    event instanceof HTMLElement ? event : (event.target as HTMLElement)
   const trigger = target.closest(SELECTORS.trigger)
   const id = trigger?.getAttribute(DATA_SET.id)
   const apiUrl = trigger?.getAttribute(DATA_SET.apiUrl)
@@ -214,6 +217,12 @@ const connectTriggers = (event: Event) => {
 
     return
   } else {
+    const elements = document.body.getElementsByTagName(CUSTOM_ELEMENT_TAG)
+
+    if (elements.length > 0) {
+      return
+    }
+
     const customElement = document.createElement(CUSTOM_ELEMENT_TAG)
 
     customElement.setAttribute('api-url', apiUrl)
@@ -242,9 +251,10 @@ const init = () => {
   }
 
   if (isDefineTriggers) {
-    triggers.forEach(trigger =>
-      trigger.addEventListener('click', connectTriggers),
-    )
+    triggers.forEach(trigger => {
+      // trigger.addEventListener('click', connectTriggers),
+      connectTriggers(trigger as HTMLElement)
+    })
   }
 }
 
