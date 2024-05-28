@@ -177,7 +177,7 @@ const MessagesListItem = ({ detail }: MessagesListItemProps) => {
             maxWidth: '100%',
           }}
         >
-          {detail.member.model.name}`Z`
+          {detail.member.model.name}
         </Typography>
 
         {detail.attachments.length > 0 && (
@@ -226,7 +226,6 @@ const MessagesListItem = ({ detail }: MessagesListItemProps) => {
               '& a': {
                 color: '#1876d2',
                 textDecoration: 'none',
-                textTransform: 'uppercase',
               },
 
               '& blockquote::before': {

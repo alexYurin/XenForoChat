@@ -16,10 +16,9 @@ const AppControl = ({
   setMinimize,
   closeHandler,
 }: AppControlProps) => {
-  const user = useChatStore(state => state.user)
   const rooms = useChatStore(state => state.rooms)
 
-  const link = 'https://xnf-demo.updemo.site/index.php?conversations/'
+  const link = '/conversations'
 
   const changeMinimize = () => {
     if (!isMinimize) {
