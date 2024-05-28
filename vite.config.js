@@ -73,7 +73,13 @@ export default defineConfig({
     devSourcemap: true,
   },
   build: {
+    manifest: true,
     outDir: resolve(__dirname, 'build'),
+    rollupOutputOptions: {
+      entryFileNames: `[name].js`,
+      chunkFileNames: `[name].js`,
+      assetFileNames: `[name].[ext]`,
+    },
     rollupOptions: {
       input: {
         app: resolve(__dirname, 'src/index.html'),
