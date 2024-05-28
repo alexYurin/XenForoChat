@@ -36,7 +36,7 @@ const ToolsPanel = ({
 
   const titleSize = currentRoom?.model.note ? 14 : 18
   const avatarSize = currentRoom?.model.note ? 55 : 50
-  const minHeight = currentRoom?.model.note ? 'unset' : 82
+  const minHeight = currentRoom?.model.note ? 'unset' : 81
 
   const title = (
     <Box display="flex" flexDirection="column">
