@@ -53,7 +53,7 @@ const PopupLayout = ({ root, closeApp }: LayoutProps) => {
     justifyContent: 'center',
     p: 0.5,
     pb: isMinimize ? 0 : 0.5,
-    width: '100%',
+    width: 'calc(100% - 0.8rem)',
     backgroundColor: isMinimize ? 'transparent' : '#999',
     borderRadius: 4,
   }
@@ -115,7 +115,7 @@ const PopupLayout = ({ root, closeApp }: LayoutProps) => {
                 <Divider sx={sxDivider} />
                 <RoomSearch elRef={roomSearchRef} />
                 <Divider sx={sxDivider} />
-                <RoomsList sx={{ height: sectionHeight }} />
+                <RoomsList sx={{ height: sectionHeight - 61 }} />
               </Paper>
             </StyledRoomsBox>
             <StyledMessagesBox item xs={12}>

@@ -108,7 +108,9 @@ const ToolsPanel = ({
             flexGrow: 1,
             paddingX: 1.4,
             paddingY: 1.12,
-            width: 'calc(100% - 64px)',
+            width: XenChatMode.POPUP
+              ? 'calc(100% - 80px)'
+              : 'calc(100% - 64px)',
           }}
         >
           {mode === XenChatMode.BASIC && <ToolsSettingsButton />}
