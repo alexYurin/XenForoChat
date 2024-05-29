@@ -89,7 +89,7 @@ const MessagesListItem = ({ detail }: MessagesListItemProps) => {
         component="time"
         color="GrayText"
       >
-        {dateFromNow(detail.createAt)}
+        {dateFromNow(detail.createAt, true)}
         {
           isRevert && (
             <CheckOutlinedIcon />
