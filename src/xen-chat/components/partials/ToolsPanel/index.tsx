@@ -5,6 +5,8 @@ import {
   styled,
   Typography,
   SxProps,
+  Button,
+  ButtonGroup,
 } from '@mui/material'
 import { AvatarExt, AvatarGroupExt } from '@app/components/ui'
 import ToolsMenuButton from './ToolsMenuButton'
@@ -32,24 +34,11 @@ const ToolsPanel = ({
   const sxTitle: SxProps = {
     display: 'inline-block',
     textOverflow: 'ellipsis',
+    fontSize: 15,
   }
 
-  const titleSize = currentRoom?.model.note ? 14 : 18
   const avatarSize = currentRoom?.model.note ? 55 : 50
-  const minHeight = currentRoom?.model.note ? 'unset' : 81
-
-  const title = (
-    <Box display="flex" flexDirection="column">
-      <Typography noWrap fontSize={titleSize} fontWeight={500} sx={sxTitle}>
-        {currentRoom?.model.title}
-      </Typography>
-      {currentRoom?.model.note && (
-        <Typography noWrap fontSize={12} color="#f47d02" sx={sxTitle}>
-          {currentRoom?.model.note}
-        </Typography>
-      )}
-    </Box>
-  )
+  const minHeight = 88
 
   const members = (
     <AvatarGroupExt
@@ -62,8 +51,37 @@ const ToolsPanel = ({
         })) || []
       }
       max={4}
-      size={20}
+      size={18}
     />
+  )
+
+  const actions = (
+    <ButtonGroup
+      variant="text"
+      size="small"
+      sx={{ ml: 'auto', transform: 'translateY(2px)' }}
+    >
+      {currentRoom?.model.actions.map(action => {
+        return (
+          <Button
+            component="a"
+            href={`${action.url}?_back=${window.location.pathname}`}
+            target={action.isTargetBlank ? '_blank' : undefined}
+            sx={{ whiteSpace: 'nowrap' }}
+          >
+            {action.title}
+          </Button>
+        )
+      })}
+    </ButtonGroup>
+  )
+
+  const title = (
+    <Box display="flex" flexDirection="column">
+      <Typography noWrap fontWeight={500} sx={sxTitle}>
+        {currentRoom?.model.title}
+      </Typography>
+    </Box>
   )
 
   const StyledBackButton = styled(IconButton)(({ theme }) => ({
@@ -99,7 +117,28 @@ const ToolsPanel = ({
           src={currentRoom?.model.owner.model.avatar}
           badgeCount={currentRoom?.model.isUnread ? 1 : 0}
           avatarBadgeVariant="dot"
-          description={members}
+          description={
+            <Box>
+              <Box
+                display="flex"
+                gap={1}
+                sx={{ flexFlow: 'row nowrap', alignItems: 'center' }}
+              >
+                {members}
+                {actions}
+              </Box>
+              {currentRoom?.model.note && (
+                <Typography
+                  noWrap
+                  mt={0.5}
+                  color="#f47d02"
+                  sx={{ ...sxTitle, fontSize: 11 }}
+                >
+                  {currentRoom?.model.note}
+                </Typography>
+              )}
+            </Box>
+          }
           sxAvatar={{ width: avatarSize, height: avatarSize }}
           sxLabel={{ fontSize: 18 }}
           hiddenAvatar={mode === XenChatMode.POPUP}

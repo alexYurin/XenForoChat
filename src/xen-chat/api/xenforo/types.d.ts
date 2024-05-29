@@ -10,6 +10,7 @@ export type ConversationType = {
   conversation_id: number
   title: string
   note?: string
+  actions?: ConversationActionType[]
   user_id: number
   start_date: number
   open_invite: boolean
@@ -30,6 +31,12 @@ export type ConversationType = {
     username: string
     view_url: string
   }[]
+}
+
+export type ConversationActionType = {
+  url: string
+  title: string
+  new_window: boolean
 }
 
 export type ConversationMessageType = {

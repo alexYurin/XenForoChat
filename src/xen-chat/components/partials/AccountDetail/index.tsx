@@ -1,9 +1,9 @@
 import { RefObject } from 'react'
 import { Button, Box, Typography, Skeleton } from '@mui/material'
 import { AvatarExt } from '@app/components/ui'
-import PlaylistAddIcon from '@mui/icons-material/PlaylistAdd'
 import { useChatStore } from '@app/store'
 import { sxButton } from '@app/themes/components/button'
+import PlaylistAddIcon from '@mui/icons-material/PlaylistAdd'
 
 export type AccountDetailProps = {
   elRef?: RefObject<HTMLDivElement>
@@ -38,7 +38,15 @@ const AccountDetail = ({ elRef }: AccountDetailProps) => {
   )
 
   return (
-    <div ref={elRef}>
+    <div
+      ref={elRef}
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        width: '100%',
+        minHeight: '88px',
+      }}
+    >
       {isReady ? (
         <AvatarExt
           isOnline
@@ -48,7 +56,7 @@ const AccountDetail = ({ elRef }: AccountDetailProps) => {
           description={
             <Typography fontSize={'1rem'}>{user?.user_title}</Typography>
           }
-          sx={{ paddingX: 1.4, paddingY: 1.13, pr: 1 }}
+          sx={{ width: '100%', paddingX: 1.4, paddingY: 1.13, pr: 1 }}
           sxAvatar={{ width: 63, height: 63 }}
         >
           <Button
@@ -75,7 +83,13 @@ const AccountDetail = ({ elRef }: AccountDetailProps) => {
           gap={2}
           component="a"
           href={user?.view_url}
-          sx={{ paddingX: 1.4, paddingY: 1.13, pr: 3, cursor: 'pointer' }}
+          sx={{
+            paddingX: 1.4,
+            paddingY: 1.13,
+            pr: 3,
+            width: '100%',
+            cursor: 'pointer',
+          }}
         >
           <Skeleton variant="circular" width={63} height={63} />
           <Skeleton variant="rounded" width={100} height={20} />
