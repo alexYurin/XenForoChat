@@ -1,4 +1,10 @@
-import { Box, ListItem, ListItemButton, Typography } from '@mui/material'
+import {
+  Box,
+  LinearProgress,
+  ListItem,
+  ListItemButton,
+  Typography,
+} from '@mui/material'
 import { AvatarExt } from '@app/components/ui'
 import { RoomModelType } from '@app/core/domain/Room'
 import { stripTagsFromHTML, dateFromNow } from '@app/helpers'
@@ -11,6 +17,7 @@ export type RoomsListItemProps = {
 
 const RoomsListItem = ({ detail }: RoomsListItemProps) => {
   const currentRoom = useChatStore(state => state.currentRoom)
+  const loadingRoom = useChatStore(state => state.loadingRoom)
   const setCurrentRoom = useChatStore(state => state.setCurrentRoom)
 
   const ref = useRef<HTMLLIElement>(null)
@@ -51,8 +58,13 @@ const RoomsListItem = ({ detail }: RoomsListItemProps) => {
   return (
     <ListItem
       ref={ref}
-      sx={{ paddingX: 0, paddingY: 0 }}
       onClick={onPressRoomItem}
+      sx={{
+        position: 'relative',
+        paddingX: 0,
+        paddingY: 0,
+        pointerEvents: loadingRoom ? 'none' : 'unset',
+      }}
     >
       <ListItemButton
         selected={isSelected}
@@ -82,7 +94,7 @@ const RoomsListItem = ({ detail }: RoomsListItemProps) => {
                 <Typography
                   pb={0.2}
                   noWrap
-                  fontSize={11}
+                  fontSize={10}
                   fontWeight={500}
                   color="#f47d02"
                   sx={{
@@ -100,7 +112,6 @@ const RoomsListItem = ({ detail }: RoomsListItemProps) => {
           description={description}
           sx={{
             paddingX: 1.4,
-            // pb: 0,
             bgcolor: 'transparent',
             width: calcWidthText,
           }}
@@ -123,6 +134,19 @@ const RoomsListItem = ({ detail }: RoomsListItemProps) => {
             </Typography>
           </Box>
         </AvatarExt>
+        {loadingRoom === detail.id && (
+          <Box
+            sx={{
+              position: 'absolute',
+              width: '100%',
+              left: 0,
+              bottom: 0,
+              color: '#ccc',
+            }}
+          >
+            <LinearProgress color="inherit" />
+          </Box>
+        )}
       </ListItemButton>
     </ListItem>
   )

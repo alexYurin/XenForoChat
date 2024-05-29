@@ -54,6 +54,7 @@ const BasicLayout = () => {
   }))
 
   const StyledMessagesBox = styled(Grid)(({ theme }) => ({
+    position: 'relative',
     [theme.breakpoints.down('md')]: {
       display: isVisibleMessagesBox || isShowMessagesContent ? 'grid' : 'none',
       position: 'absolute',

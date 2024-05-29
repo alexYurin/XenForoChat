@@ -14,6 +14,6 @@ export const sxInput: SxProps = {
   },
   '& .MuiFormLabel-root': {
     fontSize: 16,
-    height: 18,
+    height: 20,
   },
 }

@@ -4,7 +4,6 @@ import { AvatarExt } from '@app/components/ui'
 import PlaylistAddIcon from '@mui/icons-material/PlaylistAdd'
 import { useChatStore } from '@app/store'
 import { sxButton } from '@app/themes/components/button'
-import styled from '@emotion/styled'
 
 export type AccountDetailProps = {
   elRef?: RefObject<HTMLDivElement>
@@ -78,7 +77,7 @@ const AccountDetail = ({ elRef }: AccountDetailProps) => {
           href={user?.view_url}
           sx={{ paddingX: 1.4, paddingY: 1.13, pr: 3, cursor: 'pointer' }}
         >
-          <Skeleton variant="circular" width={50} height={50} />
+          <Skeleton variant="circular" width={63} height={63} />
           <Skeleton variant="rounded" width={100} height={20} />
           <Skeleton
             variant="rounded"

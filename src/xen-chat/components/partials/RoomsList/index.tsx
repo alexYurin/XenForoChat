@@ -109,8 +109,9 @@ const RoomsList = memo(({ sx }: RoomsListProps) => {
           justifyContent="center"
           alignItems="center"
           height="100%"
+          color="#ccc"
         >
-          <CircularProgress color="primary" />
+          <CircularProgress color="inherit" />
         </Box>
       )}
       <span

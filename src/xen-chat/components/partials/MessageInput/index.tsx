@@ -152,7 +152,9 @@ const MessageInput = ({ elRef }: MessageInputProps) => {
   }
 
   const sendContent = () => {
-    if (isRoomLock) {
+    const trimmedContent = content.replace(/(<\/?[^>]+(>|$)|&nbsp;|\s)/g, '')
+
+    if (isRoomLock || !trimmedContent) {
       return
     }
 

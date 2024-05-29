@@ -1,5 +1,11 @@
-import { useRef, useEffect } from 'react'
-import { List, SxProps } from '@mui/material'
+import { useRef, useEffect, useState } from 'react'
+import {
+  Box,
+  CircularProgress,
+  LinearProgress,
+  List,
+  SxProps,
+} from '@mui/material'
 import Messages from './Messages'
 import { useChatStore } from '@app/store'
 import { XenChatMode } from '@app/enums'
@@ -18,7 +24,9 @@ const MessagesList = ({ sx }: MessagesListProps) => {
     state => state.loadMoreCurrentRoomMessages,
   )
 
-  const isLoadingMessages = useChatStore(state => state.isLoadingMessages)
+  const loadingRoom = useChatStore(state => state.loadingRoom)
+
+  const [isLoadingMore, setLoadingMore] = useState(false)
 
   const observerTarget = useRef<HTMLDivElement>(null)
   const listTarget = useRef<HTMLUListElement>(null)
@@ -29,10 +37,14 @@ const MessagesList = ({ sx }: MessagesListProps) => {
         if (entries[0].isIntersecting) {
           let lastScrollTop = listTarget.current?.scrollTop
 
+          setLoadingMore(true)
+
           loadMoreCurrentRoomMessages().finally(() => {
             if (listTarget.current && lastScrollTop !== undefined) {
               listTarget.current!.scrollTop = lastScrollTop!
             }
+
+            setLoadingMore(false)
           })
         }
       },
@@ -51,37 +63,66 @@ const MessagesList = ({ sx }: MessagesListProps) => {
   }, [observerTarget])
 
   return (
-    <List
-      ref={listTarget}
-      sx={{
-        display: 'flex',
-        position: 'relative',
-        flexDirection: 'column-reverse',
-        mt: 'auto',
-        gap: 2,
-        paddingX: 2,
-        paddingY: 1,
-        overflowY: 'auto',
-        overflowX: 'auto',
-        opacity: isLoadingMessages ? 0.5 : 1,
-        pointerEvents: isLoadingMessages ? 'none' : undefined,
-        '&::-webkit-scrollbar': {
-          width: '0.4em',
-        },
-        '&::-webkit-scrollbar-track': {
-          boxShadow: 'inset 0 0 6px rgba(0,0,0,0.00)',
-          webkitBoxShadow: 'inset 0 0 6px rgba(0,0,0,0.00)',
-        },
-        '&::-webkit-scrollbar-thumb': {
-          borderRadius: 6,
-          backgroundColor: 'rgba(0,0,0,0.15)',
-        },
-        ...sx,
-      }}
-    >
-      <Messages />
-      <span ref={observerTarget} style={{ visibility: 'hidden' }} />
-    </List>
+    <>
+      {isLoadingMore && (
+        <Box
+          sx={{
+            position: 'absolute',
+            top: mode === XenChatMode.POPUP ? '81px' : '90px',
+            left: mode === XenChatMode.POPUP ? 0 : '8px',
+            width: mode === XenChatMode.POPUP ? '100%' : 'calc(100% - 8px)',
+            color: '#ccc',
+            zIndex: 2,
+          }}
+        >
+          <LinearProgress color="inherit" />
+        </Box>
+      )}
+      {loadingRoom && (
+        <Box
+          sx={{
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            color: '#ccc',
+          }}
+        >
+          <CircularProgress color="inherit" />
+        </Box>
+      )}
+      <List
+        ref={listTarget}
+        sx={{
+          display: 'flex',
+          position: 'relative',
+          flexDirection: 'column-reverse',
+          mt: 'auto',
+          gap: 2,
+          paddingX: 2,
+          paddingY: 1,
+          overflowY: 'auto',
+          overflowX: 'auto',
+          opacity: loadingRoom ? 0.5 : 1,
+          pointerEvents: loadingRoom ? 'none' : undefined,
+          '&::-webkit-scrollbar': {
+            width: '0.4em',
+          },
+          '&::-webkit-scrollbar-track': {
+            boxShadow: 'inset 0 0 6px rgba(0,0,0,0.00)',
+            webkitBoxShadow: 'inset 0 0 6px rgba(0,0,0,0.00)',
+          },
+          '&::-webkit-scrollbar-thumb': {
+            borderRadius: 6,
+            backgroundColor: 'rgba(0,0,0,0.15)',
+          },
+          ...sx,
+        }}
+      >
+        <Messages />
+        <span ref={observerTarget} style={{ visibility: 'hidden' }} />
+      </List>
+    </>
   )
 }
 

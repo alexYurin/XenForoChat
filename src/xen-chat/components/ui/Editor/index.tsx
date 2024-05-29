@@ -117,7 +117,8 @@ const Editor = ({
 
   const onEditorKeyDown: KeyboardEventHandler<HTMLDivElement> = event => {
     if (event.code === 'Enter' && !event.shiftKey) {
-      editor?.commands.setContent('')
+      editor?.commands.clearContent(true)
+      editor?.commands.focus('end')
     }
 
     if (typeof onKeyDown === 'function') {
@@ -138,6 +139,12 @@ const Editor = ({
       editor?.commands.clearContent(true)
     }
   }, [inputMode, content])
+
+  useEffect(() => {
+    if (editor) {
+      editor.commands.focus('end')
+    }
+  }, [editor])
 
   return (
     <>

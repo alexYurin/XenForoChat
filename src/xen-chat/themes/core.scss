@@ -31,10 +31,9 @@
     @include media.tablet {
       top: auto;
       left: auto;
-      right: 6px;
-      bottom: 6px;
-      width: 40vw;
-      max-width: 440px;
+      right: 20px;
+      bottom: 10px;
+      width: 440px;
       min-width: 360px;
       height: 60vh;
     }

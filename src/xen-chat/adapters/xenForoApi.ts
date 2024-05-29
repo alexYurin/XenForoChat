@@ -26,7 +26,7 @@ export function adoptMember(user: UserType) {
     id: user.user_id,
     name: user.username,
     title: user.user_title,
-    avatar: user.avatar_urls.h,
+    avatar: user.avatar_urls.l,
     link: user.view_url,
   })
 }
@@ -56,7 +56,7 @@ export function adoptRoom(conversation: ConversationType) {
           id: member.user_id,
           name: member.username,
           title: member.user_title,
-          avatar: member.avatar_urls.h,
+          avatar: member.avatar_urls.l,
           link: member.view_url,
         }),
     ),

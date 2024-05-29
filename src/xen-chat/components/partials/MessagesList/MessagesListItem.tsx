@@ -85,6 +85,7 @@ const MessagesListItem = ({ detail }: MessagesListItemProps) => {
         alignItems="center"
         ml="auto"
         gap={0.5}
+        fontSize="0.8rem"
         component="time"
         color="GrayText"
       >

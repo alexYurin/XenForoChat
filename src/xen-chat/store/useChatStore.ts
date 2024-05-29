@@ -15,7 +15,9 @@ import { MessageModelType } from '@app/core/domain/Message'
 import { adoptMember } from '@app/adapters/xenForoApi'
 import { generateReplyMessage } from '@app/helpers'
 
-const createError = (error: unknown): ErrorType => {
+const excludeErrors = ['Request aborted']
+
+const createError = (error: unknown): ErrorType | null => {
   if (Array.isArray((error as ResponseErrorType).errors)) {
     return {
       message: (error as ResponseErrorType).errors
@@ -26,7 +28,9 @@ const createError = (error: unknown): ErrorType => {
 
   console.log(error)
 
-  return { message: `${error}` }
+  return excludeErrors.filter(err => `${error}`.includes(err)).length === 0
+    ? { message: `${error}` }
+    : null
 }
 
 // @TODO Decompose
@@ -52,8 +56,8 @@ export interface ChatState {
   error: ErrorType | null
   resetError: () => void
   user: UserType | null
-  isLoadingMessages: boolean
-  setLoadingMessages: (isLoading: boolean) => void
+  loadingRoom: number | null
+  setLoadingRoom: (roomId: number | null) => void
   isVisibleAddRoomForm: boolean
   setVisibleAddRoomForm: (isVisible: boolean) => void
   visibleSettingsRoomForm: Room | null
@@ -214,9 +218,8 @@ const useChatStore = create<ChatState>()(
         set(() => ({ user }))
       },
 
-      isLoadingMessages: false,
-      setLoadingMessages: isLoadingMessages =>
-        set(() => ({ isLoadingMessages })),
+      loadingRoom: null,
+      setLoadingRoom: roomId => set(() => ({ loadingRoom: roomId })),
 
       isVisibleAddRoomForm: false,
       setVisibleAddRoomForm: isVisible =>
@@ -432,7 +435,7 @@ const useChatStore = create<ChatState>()(
 
         const lastPage = currentRoom?.model.lastPageNumber || messagesPage
 
-        get().setLoadingMessages(true)
+        get().setLoadingRoom(roomId)
 
         set(() => ({
           inputMode: 'default',
@@ -467,7 +470,7 @@ const useChatStore = create<ChatState>()(
 
           get().resetError()
 
-          get().setLoadingMessages(false)
+          get().setLoadingRoom(null)
 
           if (get().isUrlQuery) {
             const roomUrl = `?conversations/${user?.username}.${roomId}`
@@ -492,7 +495,7 @@ const useChatStore = create<ChatState>()(
           const responseError = error as ResponseErrorType
           set(() => ({ error: createError(responseError) }))
 
-          get().setLoadingMessages(false)
+          get().setLoadingRoom(null)
         }
       },
 
