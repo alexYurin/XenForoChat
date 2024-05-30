@@ -68,9 +68,9 @@ const MessagesList = ({ sx }: MessagesListProps) => {
         <Box
           sx={{
             position: 'absolute',
-            top: mode === XenChatMode.POPUP ? '88px' : '97px',
-            left: mode === XenChatMode.POPUP ? 0 : '8px',
-            width: mode === XenChatMode.POPUP ? '100%' : 'calc(100% - 8px)',
+            top: '88px',
+            left: '0',
+            width: '100%',
             color: '#ccc',
             zIndex: 2,
           }}
