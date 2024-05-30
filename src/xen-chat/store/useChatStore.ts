@@ -17,6 +17,8 @@ import { generateReplyMessage } from '@app/helpers'
 
 const excludeErrors = ['Request aborted']
 
+const urlSeparator = '.'
+
 const createError = (error: unknown): ErrorType | null => {
   if (Array.isArray((error as ResponseErrorType).errors)) {
     return {
@@ -158,7 +160,7 @@ const useChatStore = create<ChatState>()(
           showAddRoom()
         } else {
           pathnameLocations.forEach(path => {
-            const roomId = parseInt(path.split('.')[1] || '')
+            const roomId = parseInt(path.split(urlSeparator)[1] || '')
 
             if (roomId && !isNaN(roomId)) {
               setRoom(roomId)
@@ -175,7 +177,7 @@ const useChatStore = create<ChatState>()(
 
           const roomId =
             typeof payload === 'string'
-              ? parseInt(payload.split('.')[1] || '')
+              ? parseInt(payload.split(urlSeparator)[1] || '')
               : null
 
           if (roomId && !isNaN(roomId)) {
@@ -473,7 +475,10 @@ const useChatStore = create<ChatState>()(
           get().setLoadingRoom(null)
 
           if (get().isUrlQuery) {
-            const roomUrl = `?conversations/${user?.username}.${roomId}`
+            const roomUrl = `?conversations/${currentRoom.model.title
+              .toLowerCase()
+              .replaceAll(' ', '-')
+              .replaceAll('%20', '-')}}${urlSeparator}${roomId}`
 
             window.history.replaceState({}, document.title, roomUrl)
           } else {
@@ -482,12 +487,24 @@ const useChatStore = create<ChatState>()(
               .replace('/unread', '')
               .replace('index.html', '')
               .replace('index.php', '')
-              .replace(`${user?.username}.${prevRoomId ?? roomId}`, '')
+              .replace(
+                `${user?.username}${urlSeparator}${prevRoomId ?? roomId}`,
+                '',
+              )
 
-            const roomUrl = `${pathname}`.replace(
-              `.${prevRoomId || roomId}`,
-              `.${roomId}`,
+            let roomUrl = `${pathname}`.replace(
+              `${urlSeparator}${prevRoomId || roomId}`,
+              `${urlSeparator}${roomId}`,
             )
+
+            if (prevRoomId || pathname === roomUrl) {
+              roomUrl = `/conversations/${currentRoom.model.title
+                .toLowerCase()
+                .replaceAll(' ', '-')
+                .replaceAll('%20', '-')}${urlSeparator}${roomId}`
+            }
+
+            console.log('NEXT URL', roomUrl)
 
             window.history.replaceState({}, document.title, roomUrl)
           }

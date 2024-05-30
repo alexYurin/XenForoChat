@@ -70,6 +70,7 @@ const PopupLayout = ({ root, closeApp }: LayoutProps) => {
   const sxSectionProps: SxProps = {
     display: 'flex',
     flexDirection: 'column',
+    position: 'relative',
     height: '100%',
     overflow: 'hidden',
   }

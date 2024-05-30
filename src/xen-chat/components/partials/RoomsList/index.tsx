@@ -1,4 +1,4 @@
-import { useEffect, useRef, memo } from 'react'
+import { useEffect, useRef, memo, useState } from 'react'
 import { Box, Button, CircularProgress, List, SxProps } from '@mui/material'
 import { Empty } from '@app/components/ui'
 import { useChatStore } from '@app/store'
@@ -19,6 +19,8 @@ const RoomsList = memo(({ sx }: RoomsListProps) => {
   const setVisibleAddForm = useChatStore(state => state.setVisibleAddRoomForm)
   const loadMoreRooms = useChatStore(state => state.loadMoreRooms)
 
+  const [isLoadingMore, setLoadingMore] = useState(false)
+
   const observerTarget = useRef<HTMLDivElement>(null)
   const listTarget = useRef<HTMLUListElement>(null)
 
@@ -38,6 +40,8 @@ const RoomsList = memo(({ sx }: RoomsListProps) => {
     overflowY: 'auto',
     position: !rooms?.length || !isReady ? 'absolute' : 'relative',
     visibility: !rooms?.length || !isReady ? 'hidden' : 'visible',
+    opacity: isLoadingMore ? 0.5 : 1,
+    pointerEvents: isLoadingMore ? 'none' : 'unset',
     '&::-webkit-scrollbar': {
       width: '0.4em',
     },
@@ -66,7 +70,11 @@ const RoomsList = memo(({ sx }: RoomsListProps) => {
     const observer = new IntersectionObserver(
       entries => {
         if (entries[0].isIntersecting && (rooms?.length ?? 0) > 0) {
-          loadMoreRooms()
+          setLoadingMore(true)
+
+          loadMoreRooms().finally(() => {
+            setLoadingMore(false)
+          })
         }
       },
       { threshold: 1 },
@@ -85,6 +93,20 @@ const RoomsList = memo(({ sx }: RoomsListProps) => {
 
   return (
     <>
+      {isLoadingMore && isReady && (
+        <Box
+          sx={{
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            color: '#ccc',
+            zIndex: 2,
+          }}
+        >
+          <CircularProgress color="inherit" />
+        </Box>
+      )}
       <List ref={listTarget} className="room-list" sx={sxListProps}>
         {sortRoomsByDate(rooms || []).map(room => {
           return <RoomsListItem key={room.model.id} detail={room.model} />

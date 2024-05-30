@@ -44,6 +44,7 @@ const BasicLayout = () => {
   const sxSectionProps: SxProps = {
     display: 'flex',
     flexDirection: 'column',
+    position: 'relative',
     height: '100%',
     overflow: 'hidden',
     borderRadius: 0,

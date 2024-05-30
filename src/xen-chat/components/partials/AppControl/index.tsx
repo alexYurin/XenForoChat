@@ -20,6 +20,8 @@ const AppControl = ({
 
   const link = '/conversations'
 
+  const unreadRooms = rooms?.filter(room => room.model.isUnread)
+
   const changeMinimize = () => {
     if (!isMinimize) {
       return
@@ -32,20 +34,19 @@ const AppControl = ({
     setMinimize(true)
   }
 
-  const unreadRooms = rooms?.filter(room => room.model.isUnread)
-
   const badgeMessageButton = (
     <Badge
       badgeContent={unreadRooms?.length}
       overlap="circular"
       color="error"
+      onClick={changeMinimize}
       anchorOrigin={{
         vertical: 'top',
         horizontal: 'right',
       }}
-      sx={{ mr: 'auto' }}
+      sx={{ mr: 'auto', cursor: 'pointer' }}
     >
-      <IconButton onClick={changeMinimize}>
+      <IconButton>
         <MessageOutlinedIcon />
       </IconButton>
     </Badge>

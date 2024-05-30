@@ -375,7 +375,7 @@ const MessageInput = ({ elRef }: MessageInputProps) => {
                 : 'visible',
           }}
         >
-          {isRoomLock ? 'Lock conversation' : 'Type here...'}
+          {isRoomLock ? 'Conversation is closed' : 'Type here...'}
         </Typography>
 
         <Editor

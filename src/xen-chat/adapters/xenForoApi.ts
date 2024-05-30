@@ -50,7 +50,11 @@ export function adoptRoom(conversation: ConversationType) {
     lastMessage: adoptMessage(conversation.last_message),
     lastMessageDate: parseDate(conversation.last_message_date),
     createdAt: parseDate(conversation.start_date),
-    actions: (conversation.actions || []).map(action => ({
+    actions: (
+      conversation.actions || [
+        { title: 'confirm', url: 'sadas', new_window: false },
+      ]
+    ).map(action => ({
       title: action.title,
       url: action.url,
       isTargetBlank: action.new_window,

@@ -74,7 +74,7 @@ const ToolsPanel = ({
             target={action.isTargetBlank ? '_blank' : undefined}
             sx={{
               whiteSpace: 'nowrap',
-              fontSize: 10,
+              fontSize: '0.8rem',
             }}
           >
             {action.title}
