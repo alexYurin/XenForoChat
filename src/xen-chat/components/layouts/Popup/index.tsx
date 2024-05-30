@@ -18,14 +18,13 @@ const PopupLayout = ({ root, closeApp }: LayoutProps) => {
   const rootHeight = useChatStore(state => state.rootHeight)
   const currentRoom = useChatStore(state => state.currentRoom)
   const setRootHeight = useChatStore(state => state.setRootHeight)
+  const resetCurrentRoom = useChatStore(state => state.resetCurrentRoom)
+  const isMinimize = useChatStore(state => state.isMinimize)
+  const setMinimize = useChatStore(state => state.setMinimize)
 
   const [isVisibleMessagesBox, setVisibleMessagesBox] = useState(
     Boolean(currentRoom),
   )
-
-  const resetCurrentRoom = useChatStore(state => state.resetCurrentRoom)
-
-  const [isMinimize, setMinimize] = useState(true)
 
   const isShowMessagesContent = currentRoom !== null
 

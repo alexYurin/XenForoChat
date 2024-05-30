@@ -40,6 +40,8 @@ const createError = (error: unknown): ErrorType | null => {
 
 export interface ChatState {
   isReady: boolean
+  isMinimize: boolean
+  setMinimize: (isMinimize: boolean) => void
   rootHeight: number | null
   setRootHeight: (height: number) => void
   setReady: (isReady: boolean) => void
@@ -114,6 +116,9 @@ const useChatStore = create<ChatState>()(
   devtools(
     // persist(
     (set, get) => ({
+      isMinimize: true,
+      setMinimize: isMinimize => set(() => ({ isMinimize })),
+
       rootHeight: null,
       setRootHeight: height => set(() => ({ rootHeight: height })),
 
@@ -125,6 +130,13 @@ const useChatStore = create<ChatState>()(
       isUrlQuery: false,
       inviteUser: null,
       handleApiUrl: async location => {
+        const isMinimize = get().isMinimize
+        const mode = get().mode
+
+        if (mode === XenChatMode.POPUP && isMinimize) {
+          return
+        }
+
         const params = location.search.replace('?', '')?.split('/')
         const pathname = location.pathname
 
