@@ -1,4 +1,4 @@
-import { readdirSync } from 'fs'
+import { renameSync, readdirSync } from 'fs'
 import { extname, resolve } from 'path'
 
 export const scanPath = path => readdirSync(path)
@@ -49,4 +49,35 @@ export const configureInputs = (path, context) => {
       [input.name === 'index' ? input.context : input.name]: resolve(input.src),
     }
   }, {})
+}
+
+export function MoveManifestPlugin(desiredManifestPath) {
+  let outDir, manifest
+
+  const defaultManifestPath = '.vite/manifest.json'
+
+  return {
+    name: 'move-manifest',
+    configResolved(resolvedConfig) {
+      outDir = resolvedConfig.build.outDir
+
+      const resolvedManifest = resolvedConfig.build.manifest
+      if (resolvedManifest) {
+        manifest =
+          typeof resolvedManifest === 'string'
+            ? resolvedManifest
+            : defaultManifestPath
+      } else {
+        manifest = false
+      }
+    },
+    async writeBundle(_options, _bundle) {
+      if (manifest === false) return
+
+      await renameSync(
+        resolve(__dirname, outDir, manifest),
+        desiredManifestPath,
+      )
+    },
+  }
 }

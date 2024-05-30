@@ -4,7 +4,7 @@ import react from '@vitejs/plugin-react'
 import { resolve } from 'path'
 import { defineConfig } from 'vite'
 import { viteStaticCopy } from 'vite-plugin-static-copy'
-import { configureInputs } from './vite.utils'
+import { configureInputs, MoveManifestPlugin } from './vite.utils'
 
 const copyOptions = {
   targets: [
@@ -86,7 +86,10 @@ export default defineConfig({
         ['xen-chat']: resolve(__dirname, 'src/xen-chat/index.ts'),
         ...configureInputs('src', 'views'),
       },
-      plugins: [nodePolyfills()],
+      plugins: [
+        nodePolyfills(),
+        MoveManifestPlugin('./build/assets/manifest.json'),
+      ],
     },
   },
 })
