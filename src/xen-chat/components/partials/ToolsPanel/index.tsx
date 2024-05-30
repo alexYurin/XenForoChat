@@ -51,7 +51,8 @@ const ToolsPanel = ({
         })) || []
       }
       max={4}
-      size={18}
+      size={currentRoom?.model.note ? 18 : 26}
+      sx={{ transform: currentRoom?.model.note ? 'unset' : 'translateY(10px)' }}
     />
   )
 
@@ -59,7 +60,11 @@ const ToolsPanel = ({
     <ButtonGroup
       variant="text"
       size="small"
-      sx={{ ml: 'auto', transform: 'translateY(2px)' }}
+      sx={{
+        ml: 'auto',
+        transform: 'translateY(2px)',
+        '& .MuiButtonBase-root': { borderColor: 'transparent' },
+      }}
     >
       {currentRoom?.model.actions.map(action => {
         return (
@@ -67,7 +72,10 @@ const ToolsPanel = ({
             component="a"
             href={`${action.url}?_back=${window.location.pathname}`}
             target={action.isTargetBlank ? '_blank' : undefined}
-            sx={{ whiteSpace: 'nowrap' }}
+            sx={{
+              whiteSpace: 'nowrap',
+              fontSize: 10,
+            }}
           >
             {action.title}
           </Button>
@@ -77,7 +85,11 @@ const ToolsPanel = ({
   )
 
   const title = (
-    <Box display="flex" flexDirection="column">
+    <Box
+      display="flex"
+      flexDirection="column"
+      sx={{ transform: currentRoom?.model.note ? 'unset' : 'translateY(10px)' }}
+    >
       <Typography noWrap fontWeight={500} sx={sxTitle}>
         {currentRoom?.model.title}
       </Typography>
@@ -96,7 +108,12 @@ const ToolsPanel = ({
     <Paper
       ref={elRef}
       elevation={0}
-      sx={{ display: 'flex', alignItems: 'center', width: '100%', minHeight }}
+      sx={{
+        display: 'flex',
+        alignItems: 'center',
+        width: '100%',
+        height: minHeight,
+      }}
     >
       <Box sx={{ display: 'flex', alignItems: 'center', width: '100%' }}>
         <StyledBackButton
@@ -127,16 +144,18 @@ const ToolsPanel = ({
                 {members}
                 {actions}
               </Box>
-              {currentRoom?.model.note && (
-                <Typography
-                  noWrap
-                  mt={0.5}
-                  color="#f47d02"
-                  sx={{ ...sxTitle, fontSize: 11 }}
-                >
-                  {currentRoom?.model.note}
-                </Typography>
-              )}
+              <Typography
+                noWrap
+                mt={0.5}
+                color="#f47d02"
+                sx={{
+                  ...sxTitle,
+                  fontSize: 11,
+                  visibility: currentRoom?.model.note ? 'visible' : 'hidden',
+                }}
+              >
+                {currentRoom?.model.note || 'Empty'}
+              </Typography>
             </Box>
           }
           sxAvatar={{ width: avatarSize, height: avatarSize }}

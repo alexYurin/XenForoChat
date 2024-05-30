@@ -7,7 +7,6 @@ import {
   SxProps,
 } from '@mui/material'
 import { useChatStore } from '@app/store'
-import NotificationsNoneOutlinedIcon from '@mui/icons-material/NotificationsNoneOutlined'
 import StarBorderOutlinedIcon from '@mui/icons-material/StarBorderOutlined'
 import DraftsOutlinedIcon from '@mui/icons-material/DraftsOutlined'
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
@@ -133,12 +132,6 @@ const ToolsMenu = ({ anchorElement, isOpen, onClose }: AccountMenuProps) => {
       disablePortal
       slotProps={slotProps}
     >
-      {/* <MenuItem onClick={onClose} sx={sxItemProps}>
-        <ListItemIcon>
-          <NotificationsNoneOutlinedIcon sx={sxIconProps} />
-        </ListItemIcon>
-        <ListItemText sx={sxItemTextProps}>Notifications</ListItemText>
-      </MenuItem> */}
       <MenuItem onClick={onPressStar} sx={sxItemProps}>
         <ListItemIcon>
           <StarBorderOutlinedIcon
