@@ -40,8 +40,6 @@ const RoomsList = memo(({ sx }: RoomsListProps) => {
     overflowY: 'auto',
     position: !rooms?.length || !isReady ? 'absolute' : 'relative',
     visibility: !rooms?.length || !isReady ? 'hidden' : 'visible',
-    opacity: isLoadingMore ? 0.5 : 1,
-    pointerEvents: isLoadingMore ? 'none' : 'unset',
     '&::-webkit-scrollbar': {
       width: '0.4em',
     },
@@ -67,14 +65,19 @@ const RoomsList = memo(({ sx }: RoomsListProps) => {
   }, [listTarget])
 
   useEffect(() => {
+    let no = false
     const observer = new IntersectionObserver(
       entries => {
         if (entries[0].isIntersecting && (rooms?.length ?? 0) > 0) {
-          setLoadingMore(true)
+          if (!no) {
+            setLoadingMore(true)
+            no = true
 
-          loadMoreRooms().finally(() => {
-            setLoadingMore(false)
-          })
+            loadMoreRooms().finally(() => {
+              setLoadingMore(false)
+              no = false
+            })
+          }
         }
       },
       { threshold: 1 },
@@ -93,24 +96,31 @@ const RoomsList = memo(({ sx }: RoomsListProps) => {
 
   return (
     <>
-      {isLoadingMore && isReady && (
-        <Box
-          sx={{
-            position: 'absolute',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            color: '#ccc',
-            zIndex: 2,
-          }}
-        >
-          <CircularProgress color="inherit" />
-        </Box>
-      )}
       <List ref={listTarget} className="room-list" sx={sxListProps}>
         {sortRoomsByDate(rooms || []).map(room => {
           return <RoomsListItem key={room.model.id} detail={room.model} />
         })}
+        {isReady && isLoadingMore && (
+          <Box
+            sx={{
+              position: 'relative',
+              justifySelf: 'center',
+              alignSelf: 'center',
+              mt: 1,
+              textAlign: 'center',
+              color: '#ccc',
+              zIndex: 2,
+            }}
+          >
+            <CircularProgress color="inherit" size={26} />
+          </Box>
+        )}
+        <span
+          ref={observerTarget}
+          style={{
+            visibility: 'hidden',
+          }}
+        />
       </List>
       {isReady && !rooms?.length && (
         <Empty text="Conversation list is empty" sx={{ height: '100%' }}>
@@ -136,12 +146,6 @@ const RoomsList = memo(({ sx }: RoomsListProps) => {
           <CircularProgress color="inherit" />
         </Box>
       )}
-      <span
-        ref={observerTarget}
-        style={{
-          visibility: 'hidden',
-        }}
-      />
     </>
   )
 })

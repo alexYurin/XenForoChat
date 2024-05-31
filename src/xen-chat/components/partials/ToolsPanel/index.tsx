@@ -51,8 +51,7 @@ const ToolsPanel = ({
         })) || []
       }
       max={4}
-      size={currentRoom?.model.note ? 18 : 26}
-      sx={{ transform: currentRoom?.model.note ? 'unset' : 'translateY(10px)' }}
+      size={18}
     />
   )
 
@@ -85,11 +84,7 @@ const ToolsPanel = ({
   )
 
   const title = (
-    <Box
-      display="flex"
-      flexDirection="column"
-      sx={{ transform: currentRoom?.model.note ? 'unset' : 'translateY(10px)' }}
-    >
+    <Box display="flex" flexDirection="column">
       <Typography noWrap fontWeight={500} sx={sxTitle}>
         {currentRoom?.model.title}
       </Typography>
@@ -135,27 +130,22 @@ const ToolsPanel = ({
           badgeCount={currentRoom?.model.isUnread ? 1 : 0}
           avatarBadgeVariant="dot"
           description={
-            <Box>
-              <Box
-                display="flex"
-                gap={1}
-                sx={{ flexFlow: 'row nowrap', alignItems: 'center' }}
-              >
-                {members}
-                {actions}
-              </Box>
-              <Typography
-                noWrap
-                mt={0.5}
-                color="#f47d02"
-                sx={{
-                  ...sxTitle,
-                  fontSize: 11,
-                  visibility: currentRoom?.model.note ? 'visible' : 'hidden',
-                }}
-              >
-                {currentRoom?.model.note || 'Empty'}
-              </Typography>
+            <Box display="flex" flexDirection="column">
+              {members}
+              {currentRoom?.model.note && (
+                <Typography
+                  noWrap
+                  mt={0.5}
+                  color="#f47d02"
+                  sx={{
+                    ...sxTitle,
+                    fontSize: 11,
+                    visibility: currentRoom?.model.note ? 'visible' : 'hidden',
+                  }}
+                >
+                  {currentRoom?.model.note || 'Empty'}
+                </Typography>
+              )}
             </Box>
           }
           sxAvatar={{ width: avatarSize, height: avatarSize }}
@@ -167,13 +157,21 @@ const ToolsPanel = ({
             paddingX: 1.4,
             paddingY: 1.12,
             width: XenChatMode.POPUP
-              ? 'calc(100% - 80px)'
-              : 'calc(100% - 64px)',
+              ? 'calc(100% - 193px)'
+              : 'calc(100% - 177px)',
           }}
-        >
+        />
+        <Box display="flex" alignItems="center" ml="auto" pr={1.4}>
+          <Box
+            display="flex"
+            gap={1}
+            sx={{ flexFlow: 'row nowrap', alignItems: 'center' }}
+          >
+            {actions}
+          </Box>
           {mode === XenChatMode.BASIC && <ToolsSettingsButton />}
           <ToolsMenuButton />
-        </AvatarExt>
+        </Box>
       </Box>
     </Paper>
   )

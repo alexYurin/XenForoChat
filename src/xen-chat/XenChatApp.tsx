@@ -31,6 +31,8 @@ export default function XenChatApp({ root, mode, closeApp }: XenChatAppProps) {
   const update = useChatStore(state => state.update)
   const handleApiUrl = useChatStore(state => state.handleApiUrl)
 
+  const add = useChatStore(state => state.addNewRoom)
+
   let subscribeId: NodeJS.Timeout
   let timeoutId: NodeJS.Timeout
 

@@ -31,12 +31,7 @@ const ToolsSettingsButton = () => {
   }))
 
   return (
-    <StyledButton
-      onClick={onPress}
-      size="small"
-      style={{ marginLeft: 'auto' }}
-      sx={sxButton}
-    >
+    <StyledButton onClick={onPress} size="small" sx={sxButton}>
       <InfoOutlinedIcon sx={{ width: 24, height: 24 }} />
     </StyledButton>
   )

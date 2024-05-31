@@ -398,9 +398,9 @@ const useChatStore = create<ChatState>()(
       },
 
       update: async () => {
-        await get().getRooms({ search: get().searchString })
-
         const currentRoom = get().currentRoom
+
+        await get().getRooms({ search: get().searchString })
 
         if (currentRoom) {
           const { fetchRoomMessages } = useXenForoApiStore.getState()
@@ -670,21 +670,22 @@ const useChatStore = create<ChatState>()(
       lastRoomsPage: null,
       searchString: '',
       loadMoreRooms: async () => {
-        const { fetchRooms } = useXenForoApiStore.getState()
-        const rooms = get().rooms
         const roomsPage = get().roomsPage
         const lastRoomsPage = get().lastRoomsPage
 
         if (roomsPage < (lastRoomsPage || 1)) {
+          const { fetchRooms } = useXenForoApiStore.getState()
+          const rooms = get().rooms
+
           try {
             const response = await fetchRooms({
               page: roomsPage + 1,
             })
 
             set(() => ({
-              rooms: [...(rooms || []), ...response.rooms],
               roomsPage: response.pagination.currentPage,
               lastRoomsPage: response.pagination.lastPage,
+              rooms: [...(rooms || []), ...response.rooms],
             }))
             get().resetError()
           } catch (error) {
@@ -693,6 +694,7 @@ const useChatStore = create<ChatState>()(
           }
         }
       },
+
       getRooms: async params => {
         const search = params?.search ?? ''
         const { fetchRooms } = useXenForoApiStore.getState()

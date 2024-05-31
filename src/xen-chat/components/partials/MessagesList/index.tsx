@@ -8,7 +8,6 @@ import {
 } from '@mui/material'
 import Messages from './Messages'
 import { useChatStore } from '@app/store'
-import { XenChatMode } from '@app/enums'
 
 // @TODO Decompose
 // @TODO Optimize
@@ -18,8 +17,6 @@ export type MessagesListProps = {
 }
 
 const MessagesList = ({ sx }: MessagesListProps) => {
-  const mode = useChatStore(state => state.mode)
-
   const loadMoreCurrentRoomMessages = useChatStore(
     state => state.loadMoreCurrentRoomMessages,
   )
