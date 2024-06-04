@@ -59,6 +59,7 @@ const ToolsPanel = ({
     <ButtonGroup
       variant="text"
       size="small"
+      orientation="vertical"
       sx={{
         ml: 'auto',
         transform: 'translateY(2px)',
@@ -164,7 +165,8 @@ const ToolsPanel = ({
         <Box display="flex" alignItems="center" ml="auto" pr={1.4}>
           <Box
             display="flex"
-            gap={1}
+            flexDirection="column"
+            gap={0.5}
             sx={{ flexFlow: 'row nowrap', alignItems: 'center' }}
           >
             {actions}

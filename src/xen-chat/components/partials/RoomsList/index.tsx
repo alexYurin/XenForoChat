@@ -4,6 +4,7 @@ import { Empty } from '@app/components/ui'
 import { useChatStore } from '@app/store'
 import RoomsListItem from './RoomsListItem'
 import { sortRoomsByDate } from './helpers'
+import { useIntersection } from './useIntersection'
 
 // @TODO Decompose
 
@@ -19,10 +20,15 @@ const RoomsList = memo(({ sx }: RoomsListProps) => {
   const setVisibleAddForm = useChatStore(state => state.setVisibleAddRoomForm)
   const loadMoreRooms = useChatStore(state => state.loadMoreRooms)
 
-  const [isLoadingMore, setLoadingMore] = useState(false)
-
-  const observerTarget = useRef<HTMLDivElement>(null)
+  const observerStartTarget = useRef<HTMLDivElement>(null)
+  const observerLastTarget = useRef<HTMLDivElement>(null)
   const listTarget = useRef<HTMLUListElement>(null)
+
+  const isLoadingRoomsLastMore = useIntersection(
+    observerLastTarget,
+    rooms || [],
+    loadMoreRooms,
+  )
 
   const onPressAddConversationButton = () => {
     setVisibleAddForm(true)
@@ -64,43 +70,25 @@ const RoomsList = memo(({ sx }: RoomsListProps) => {
     return () => listTarget.current?.removeEventListener('scroll', onScroll)
   }, [listTarget])
 
-  useEffect(() => {
-    let no = false
-    const observer = new IntersectionObserver(
-      entries => {
-        if (entries[0].isIntersecting && (rooms?.length ?? 0) > 0) {
-          if (!no) {
-            setLoadingMore(true)
-            no = true
-
-            loadMoreRooms().finally(() => {
-              setLoadingMore(false)
-              no = false
-            })
-          }
-        }
-      },
-      { threshold: 1 },
-    )
-
-    if (observerTarget.current) {
-      observer.observe(observerTarget.current)
-    }
-
-    return () => {
-      if (observerTarget.current) {
-        observer.unobserve(observerTarget.current)
-      }
-    }
-  }, [observerTarget, rooms])
-
   return (
     <>
       <List ref={listTarget} className="room-list" sx={sxListProps}>
+        <span
+          ref={observerStartTarget}
+          style={{
+            visibility: 'hidden',
+          }}
+        />
         {sortRoomsByDate(rooms || []).map(room => {
-          return <RoomsListItem key={room.model.id} detail={room.model} />
+          return (
+            <RoomsListItem
+              key={room.model.id}
+              listRef={listTarget}
+              detail={room.model}
+            />
+          )
         })}
-        {isReady && isLoadingMore && (
+        {isReady && isLoadingRoomsLastMore && (
           <Box
             sx={{
               position: 'relative',
@@ -116,7 +104,7 @@ const RoomsList = memo(({ sx }: RoomsListProps) => {
           </Box>
         )}
         <span
-          ref={observerTarget}
+          ref={observerLastTarget}
           style={{
             visibility: 'hidden',
           }}

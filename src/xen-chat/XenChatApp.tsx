@@ -5,6 +5,7 @@ import {
   SettingsRoomForm,
   LeaveRoomDialog,
   RemoveRoomDialog,
+  SecurityRoomForm,
 } from './components/partials'
 import { useChatStore } from './store'
 import { getLayoutComponent } from './helpers'
@@ -87,6 +88,7 @@ export default function XenChatApp({ root, mode, closeApp }: XenChatAppProps) {
       <Layout root={root} closeApp={closeApp} />
       <AddRoomForm />
       <SettingsRoomForm />
+      <SecurityRoomForm />
       <LeaveRoomDialog />
       <RemoveRoomDialog />
       <AppMessage />

@@ -22,6 +22,10 @@ export type RoomModelType = {
   lastMessageDate: Date
   lastMessage?: Message
   lastPageNumber: number
+  security: {
+    enabled: boolean
+    keyReceived: boolean | null
+  }
   permissions: Omit<PermissionsType, 'isCanReact'>
 }
 

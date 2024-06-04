@@ -12,6 +12,7 @@ export type AccountDetailProps = {
 const AccountDetail = ({ elRef }: AccountDetailProps) => {
   const isReady = useChatStore(state => state.isReady)
   const user = useChatStore(state => state.user)
+  const rooms = useChatStore(state => state.rooms)
   const setVisibleAddForm = useChatStore(state => state.setVisibleAddRoomForm)
 
   const onPressAddButton = () => {
@@ -37,6 +38,8 @@ const AccountDetail = ({ elRef }: AccountDetailProps) => {
     </Box>
   )
 
+  const unreadRooms = rooms?.filter(room => room.model.isUnread)
+
   return (
     <div
       ref={elRef}
@@ -49,7 +52,7 @@ const AccountDetail = ({ elRef }: AccountDetailProps) => {
     >
       {isReady ? (
         <AvatarExt
-          isOnline
+          badgeCount={unreadRooms?.length}
           src={user?.avatar_urls.h}
           avatarText={user?.username}
           label={titleElement}

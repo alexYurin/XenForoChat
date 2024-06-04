@@ -95,6 +95,17 @@ export interface ChatState {
   roomsPage: number
   lastRoomsPage: number | null
   resetCurrentRoom: () => void
+  securityRoomProps: {
+    title: string
+    enabled: boolean
+    keyReceived: boolean | null
+    generateKey?: string
+  } | null
+  setSecurityKey: {
+    resolve: ((value: void | PromiseLike<void>) => void) | null
+  }
+  securityKeys?: { roomId: number; key: string }[]
+  waitSecurityKey: () => Promise<void>
   setCurrentRoom: (roomId: number, messagesPage?: number) => Promise<void>
   addNewRoom: (params: RequestParamsAddConversation) => Promise<void>
   updateRoom: (
@@ -399,9 +410,19 @@ const useChatStore = create<ChatState>()(
 
       update: async () => {
         const currentRoom = get().currentRoom
+        const currentPage = get().roomsPage
 
-        await get().getRooms({ search: get().searchString })
+        await get().getRooms({
+          search: get().searchString,
+          page: 1 /*currentPage*/,
+        })
+        // .then(() => {
+        //   if (currentRoom) {
+        //     get().setCurrentRoom(currentRoom.model.id)
+        //   }
+        // })
 
+        // @TODO Handle Current last page messages
         if (currentRoom) {
           const { fetchRoomMessages } = useXenForoApiStore.getState()
 
@@ -430,6 +451,12 @@ const useChatStore = create<ChatState>()(
       resetCurrentRoom: () => {
         set(() => ({ currentRoom: null }))
       },
+      securityRoomProps: null,
+      setSecurityKey: { resolve: null },
+      waitSecurityKey: () =>
+        new Promise(resolve => {
+          set(() => ({ setSecurityKey: { resolve } }))
+        }),
       setCurrentRoom: async (roomId, messagesPage = 0) => {
         const { getRoom } = useXenForoApiStore.getState()
         const prevRoomId = get().currentRoom?.model?.id
@@ -456,12 +483,74 @@ const useChatStore = create<ChatState>()(
           inputModeContent: null,
         }))
 
+        const isShowSecurity = currentRoom.model.security.enabled
+        const isReceivedSecurityKey = currentRoom.model.security.keyReceived
+
+        let enterSecurityKey: string | undefined
+        let generatedRoomKey: string | undefined
+
+        const securityPair = get().securityKeys?.find(
+          pair => pair.roomId === roomId,
+        )
+
+        if (isShowSecurity && !isReceivedSecurityKey) {
+          const { generateSecureRoomKey } = useXenForoApiStore.getState()
+
+          generatedRoomKey = await generateSecureRoomKey(roomId)
+        }
+
+        if (isShowSecurity && !securityPair?.key) {
+          set(() => ({
+            securityRoomProps: {
+              ...currentRoom.model.security,
+              title: currentRoom.model.title,
+              generateKey: generatedRoomKey,
+            },
+          }))
+
+          enterSecurityKey = await get().waitSecurityKey()
+
+          console.log('enterSecurityKey', enterSecurityKey)
+
+          await set(() => ({
+            securityKeys: [
+              ...(get().securityKeys || []),
+              { roomId, key: enterSecurityKey as string },
+            ],
+            setSecurityKey: { resolve: null },
+            securityRoomProps: null,
+          }))
+
+          get().setLoadingRoom(null)
+
+          if (!enterSecurityKey) {
+            return
+          }
+        }
+
+        // 4Y_iC1BeeORWGQe6RZvgZPdQq0Rmichp test-protected
+
+        // to8qtfCm6NKFEfiCvVZEi5zQfphCRtdX
+
+        // HwuwoeX02n1K4BSx-mI6HZTcM2sR3Xtq
+
+        // 6r7LjsduDhl1P2GUT0Fw-crNRLBqBZJL
+
         try {
           const user = get().user
+          const securityKey = get().securityKeys?.find(
+            pair => pair.roomId === roomId,
+          )?.key
+
+          console.log('!!!', securityKey)
 
           const { fetchRoomMessages } = useXenForoApiStore.getState()
 
-          const response = await fetchRoomMessages(roomId, lastPage)
+          const response = await fetchRoomMessages(
+            roomId,
+            lastPage,
+            securityKey,
+          )
 
           const currentRoomMessages = response.messages.toReversed()
 
@@ -472,7 +561,15 @@ const useChatStore = create<ChatState>()(
           }
 
           set(() => ({
-            currentRoom,
+            currentRoom: isShowSecurity
+              ? new Room({
+                  ...currentRoom.model,
+                  security: {
+                    enabled: true,
+                    keyReceived: Boolean(securityKey),
+                  },
+                })
+              : currentRoom,
             currentRoomMessages,
             currentRoomMessagesPage: response.pagination.currentPage,
             lastCurrentRoomMessagesPage: response.pagination.lastPage,
@@ -515,8 +612,6 @@ const useChatStore = create<ChatState>()(
                 .replaceAll(' ', '-')
                 .replaceAll('%20', '-')}${urlSeparator}${roomId}`
             }
-
-            console.log('NEXT URL', roomUrl)
 
             window.history.replaceState({}, document.title, roomUrl)
           }

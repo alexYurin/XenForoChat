@@ -24,9 +24,11 @@ export interface XenForoApiState {
   token: string | null
   updateApiUrl: (apiUrl: string) => void
   updateToken: (token: string) => void
+  generateSecureRoomKey: (roomID: number) => Promise<string | undefined>
   fetchRoomMessages: (
     roomId: number,
     page: number,
+    securityKey?: string,
   ) => Promise<{
     messages: Message[]
     pagination: { lastPage: number; currentPage: number; total: number }
@@ -114,10 +116,17 @@ const useXenForoApiStore = create<XenForoApiState>()(
           return { token }
         }),
 
-      fetchRoomMessages: (roomId, page) => {
+      generateSecureRoomKey: roomId => {
+        return get()
+          .api.conversations.postSecurityKey(roomId)
+          .then(response => response.data.conversation_secure_key)
+      },
+
+      fetchRoomMessages: (roomId, page, securityKey) => {
         return get()
           .api.conversations.getMessages(roomId, {
             page,
+            ...(securityKey ? { conversation_key: securityKey } : {}),
           })
           .then(response => ({
             messages: response.data.messages.map(message =>

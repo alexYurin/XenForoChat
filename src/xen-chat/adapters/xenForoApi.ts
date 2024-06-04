@@ -47,14 +47,16 @@ export function adoptRoom(conversation: ConversationType) {
     firstMessageId: conversation.first_message_id,
     lastMessageId: conversation.last_message_id,
     lastPageNumber: conversation.last_message_page,
-    lastMessage: adoptMessage(conversation.last_message),
+    lastMessage: conversation.last_message
+      ? adoptMessage(conversation.last_message)
+      : undefined,
     lastMessageDate: parseDate(conversation.last_message_date),
     createdAt: parseDate(conversation.start_date),
-    actions: (
-      conversation.actions || [
-        { title: 'confirm', url: 'sadas', new_window: false },
-      ]
-    ).map(action => ({
+    security: {
+      enabled: conversation.security.enabled,
+      keyReceived: conversation.security.key_received,
+    },
+    actions: (conversation.actions || []).map(action => ({
       title: action.title,
       url: action.url,
       isTargetBlank: action.new_window,

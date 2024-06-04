@@ -1,3 +1,4 @@
+import { RefObject, useEffect, useRef } from 'react'
 import {
   Box,
   LinearProgress,
@@ -9,13 +10,14 @@ import { AvatarExt } from '@app/components/ui'
 import { RoomModelType } from '@app/core/domain/Room'
 import { stripTagsFromHTML, dateFromNow } from '@app/helpers'
 import { useChatStore } from '@app/store'
-import { useRef } from 'react'
+import LockIcon from '@mui/icons-material/Lock'
 
 export type RoomsListItemProps = {
+  listRef: RefObject<HTMLUListElement>
   detail: RoomModelType
 }
 
-const RoomsListItem = ({ detail }: RoomsListItemProps) => {
+const RoomsListItem = ({ listRef, detail }: RoomsListItemProps) => {
   const currentRoom = useChatStore(state => state.currentRoom)
   const loadingRoom = useChatStore(state => state.loadingRoom)
   const setCurrentRoom = useChatStore(state => state.setCurrentRoom)
@@ -35,9 +37,35 @@ const RoomsListItem = ({ detail }: RoomsListItemProps) => {
     detail.lastMessage?.model.textParsed || '',
   )
 
+  useEffect(() => {
+    if (
+      currentRoom?.model.id === detail.id &&
+      ref.current &&
+      listRef.current &&
+      loadingRoom === null
+    ) {
+      const top = ref.current.getBoundingClientRect().top
+      const offset = 500
+
+      setTimeout(() => {
+        listRef.current?.scrollTo({
+          top: top - offset,
+          behavior: 'smooth',
+        })
+      }, 200)
+    }
+  }, [ref, listRef, loadingRoom])
+
   const label = (
     <Box sx={{ display: 'flex', flexFlow: 'nowrap' }}>
-      <Typography noWrap={true} sx={{ fontSize: 14, fontWeight: 500 }}>
+      <Typography
+        noWrap={true}
+        sx={{
+          fontSize: 14,
+          fontWeight: 500,
+          paddingLeft: detail.security.enabled ? '16px' : 0,
+        }}
+      >
         {detail.title}
       </Typography>
     </Box>
@@ -83,7 +111,7 @@ const RoomsListItem = ({ detail }: RoomsListItemProps) => {
       >
         <AvatarExt
           badgeCount={detail.isUnread ? 1 : 0}
-          avatarBadgeVariant="dot"
+          isSmallBadgeCount={true}
           isStared={detail.isStared}
           avatarText={detail.title}
           src={detail.owner.model.avatar}
@@ -106,6 +134,16 @@ const RoomsListItem = ({ detail }: RoomsListItemProps) => {
                 >
                   {detail.note}
                 </Typography>
+              )}
+              {detail.security.enabled && (
+                <Box
+                  display="flex"
+                  alignItems="center"
+                  gap={0.2}
+                  sx={{ position: 'absolute', top: '11px', left: '50px' }}
+                >
+                  <LockIcon sx={{ width: 14, height: 14, color: 'red' }} />
+                </Box>
               )}
             </>
           }

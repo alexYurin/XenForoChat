@@ -22,8 +22,12 @@ export type ConversationType = {
   last_message_date: number
   last_message_id: number
   last_message_user_id: number
-  last_message: ConversationMessageType
+  last_message?: ConversationMessageType
   Starter: UserType
+  security: {
+    enabled: boolean
+    key_received: boolean | null
+  }
   members: {
     avatar_urls: Record<string, string>
     user_id: number
@@ -200,6 +204,10 @@ export type ResponseFindUsernameType = {
   recommendations: UserType[]
 }
 
+export type ResponseSecurityRoomKeyType = {
+  conversation_secure_key: string
+}
+
 export type RequestParamsAddConversation = {
   recipient_ids: number[]
   title: string
@@ -208,6 +216,7 @@ export type RequestParamsAddConversation = {
   conversation_open?: string
   open_invite?: string
   attachment_key?: string | number
+  conversation_by_key?: '0' | '1'
 }
 
 export type RequestParamsUpdateConversation = {

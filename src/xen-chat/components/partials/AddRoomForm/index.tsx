@@ -13,6 +13,7 @@ import {
   Switch,
   SxProps,
   TextField,
+  Typography,
 } from '@mui/material'
 import { sxButton } from '@app/themes/components/button'
 import { sxInput } from '@app/themes/components/input'
@@ -67,6 +68,13 @@ const AddRoomForm = ({ onClose }: AddRoomFormProps) => {
       params = {
         ...params,
         open_invite: '1',
+      }
+    }
+
+    if (formJson.conversation_by_key === 'on') {
+      params = {
+        ...params,
+        conversation_by_key: '1',
       }
     }
 
@@ -169,6 +177,17 @@ const AddRoomForm = ({ onClose }: AddRoomFormProps) => {
             label="Lock conversation (no responses will be allowed)"
             sx={sxFormLabelProps}
           />
+          <FormControlLabel
+            control={<Switch name="conversation_by_key" />}
+            label="Conversation by key"
+            sx={sxFormLabelProps}
+          />
+          <Typography mt={-2} ml={5.8} fontSize="12px" color="GrayText">
+            The key is stored in the database for 7 days or until all
+            conversation participants confirm receipt of the key. In the event
+            of a key loss, access to conversation and to all contents will be
+            lost. The contents of this conversation will be encrypted.
+          </Typography>
         </FormGroup>
       </DialogContent>
       <DialogActions>
@@ -176,7 +195,7 @@ const AddRoomForm = ({ onClose }: AddRoomFormProps) => {
           Cancel
         </Button>
         <Button sx={sxButton} variant="contained" type="submit">
-          Create
+          Start Message
         </Button>
       </DialogActions>
       <Backdrop

@@ -13,6 +13,7 @@ import type {
   ResponsePaginationType,
   RequestParamsAddConversation,
   RequestParamsSearchConversation,
+  ResponseSecurityRoomKeyType,
 } from '@app/api/xenforo/types'
 
 export class ConversationsApiService extends BaseXenForoApiService {
@@ -64,6 +65,7 @@ export class ConversationsApiService extends BaseXenForoApiService {
       title?: string
       open_invite?: string
       conversation_open?: string
+      conversation_by_key?: '0' | '1'
     }>,
   ) {
     const requestParams = qs.stringify(params)
@@ -76,6 +78,12 @@ export class ConversationsApiService extends BaseXenForoApiService {
       `/${ConversationsApiService.path}/${conversation_id}`,
       requestParams,
     )
+  }
+
+  public async postSecurityKey(conversation_id: number) {
+    return this.network().post<
+      ResponseSecurityRoomKeyType & ResponseSuccessType
+    >(`/${ConversationsApiService.path}/${conversation_id}/securekey`)
   }
 
   public async delete(
@@ -154,6 +162,7 @@ export class ConversationsApiService extends BaseXenForoApiService {
     conversation_id: number,
     params?: Partial<{
       page: number
+      conversation_key: string
     }>,
   ) {
     const queryString = toQueryString(params || {})

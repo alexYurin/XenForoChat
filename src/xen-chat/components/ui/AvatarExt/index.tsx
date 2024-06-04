@@ -8,15 +8,18 @@ import {
   Badge,
   styled,
 } from '@mui/material'
-import { stringToColor, stringToInitials } from '@app/helpers'
+import { stringToInitials } from '@app/helpers'
 import { StyledBadge } from './styles'
+import EmailIcon from '@mui/icons-material/Email'
 import StarPurple500OutlinedIcon from '@mui/icons-material/StarPurple500Outlined'
+import LockIcon from '@mui/icons-material/Lock'
 
 // @TODO Decompose
 
 export type AvatarExtProps = {
   src?: string
   badgeCount?: number
+  isSmallBadgeCount?: boolean
   label?: React.ReactNode | string
   avatarText?: string
   avatarBadgeVariant?: 'dot' | 'standard'
@@ -35,6 +38,7 @@ export type AvatarExtProps = {
 const AvatarExt = ({
   src,
   badgeCount,
+  isSmallBadgeCount,
   label,
   avatarText,
   avatarBadgeVariant,
@@ -55,12 +59,25 @@ const AvatarExt = ({
     },
   }))
 
+  const sizeBadgeUnreadIcon = isSmallBadgeCount ? 8 : 10
+
   const avatar = (
     <HiddenXSBadge
-      badgeContent={badgeCount}
+      badgeContent={
+        badgeCount ? (
+          <Box display="flex" alignItems="center" gap={0.5}>
+            <EmailIcon
+              sx={{ width: sizeBadgeUnreadIcon, height: sizeBadgeUnreadIcon }}
+            />
+            {!isSmallBadgeCount && badgeCount}
+          </Box>
+        ) : (
+          0
+        )
+      }
       overlap="circular"
       variant={avatarBadgeVariant || 'standard'}
-      color="error"
+      color="warning"
       anchorOrigin={{
         vertical: 'bottom',
         horizontal: 'right',

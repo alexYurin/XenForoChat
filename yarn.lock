@@ -233,6 +233,11 @@
   resolved "https://registry.yarnpkg.com/@csstools/selector-specificity/-/selector-specificity-2.2.0.tgz#2cbcf822bf3764c9658c4d2e568bd0c0cb748016"
   integrity sha512-+OJ9konv95ClSTOJCmMZqpd5+YGsB2S+x6w3E1oaM8UuR5j8nTNHYSz8c9BEPGDOCMQYIEEGlVPj/VY64iTbGw==
 
+"@eisberg-labs/mui-copy-field@^4.0.2":
+  version "4.0.2"
+  resolved "https://registry.yarnpkg.com/@eisberg-labs/mui-copy-field/-/mui-copy-field-4.0.2.tgz#0f5ec346277a640aca66c1320ee33fc6c6b2e930"
+  integrity sha512-fJqsSJcUNlRJiR5sDWa0c312rlmUG3+AYcBp7XyYHg9535Ah50O2iGat8w1ai8s1Z5eG7lFG72z4VZVf6UiHfA==
+
 "@emoji-mart/data@^1.2.1":
   version "1.2.1"
   resolved "https://registry.yarnpkg.com/@emoji-mart/data/-/data-1.2.1.tgz#0ad70c662e3bc603e23e7d98413bd1e64c4fcb6c"
