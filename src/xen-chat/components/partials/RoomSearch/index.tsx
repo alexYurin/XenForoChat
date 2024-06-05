@@ -45,7 +45,8 @@ const RoomSearch = memo(({ elRef }: RoomSearchProps) => {
   const isOpenFilterMenu = Boolean(anchorFilterElement)
 
   const isDisableSearch =
-    rooms === null || (rooms?.length === 0 && searchString.length === 0)
+    rooms === null ||
+    (rooms?.length === 0 && searchString.length === 0 && filter.length === 0)
 
   const search = useMemo(
     () =>

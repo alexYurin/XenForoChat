@@ -1,4 +1,4 @@
-import { IconButton } from '@mui/material'
+import { Badge, IconButton } from '@mui/material'
 import FilterAltIcon from '@mui/icons-material/FilterAlt'
 import { useChatStore } from '@app/store'
 
@@ -23,12 +23,14 @@ const FilterMenuButton = ({
       size="small"
       style={{ marginLeft: 'auto' }}
       disabled={disabled}
-      color={isActive ? 'primary' : 'default'}
+      color={isActive ? 'warning' : 'default'}
       aria-controls={isOpen ? 'filter-menu' : undefined}
       aria-haspopup="true"
       aria-expanded={isOpen ? 'true' : undefined}
     >
-      <FilterAltIcon sx={{ width: 18, height: 18 }} />
+      <Badge badgeContent={isActive ? 1 : 0}>
+        <FilterAltIcon sx={{ width: 18, height: 18 }} />
+      </Badge>
     </IconButton>
   )
 }

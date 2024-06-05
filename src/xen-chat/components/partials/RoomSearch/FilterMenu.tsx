@@ -6,7 +6,6 @@ import {
   SxProps,
 } from '@mui/material'
 import { useChatStore } from '@app/store'
-import MarkAsUnreadIcon from '@mui/icons-material/MarkAsUnread'
 import MarkEmailUnreadIcon from '@mui/icons-material/MarkEmailUnread'
 
 export type FilterMenuProps = {
@@ -77,8 +76,7 @@ const FilterMenu = ({
   }
 
   const isOnlyUnread = searchFilter.unread === '1'
-
-  const Icon = isOnlyUnread ? MarkAsUnreadIcon : MarkEmailUnreadIcon
+  const color = isOnlyUnread ? '#ed6c02' : undefined
 
   return (
     <Menu
@@ -94,10 +92,10 @@ const FilterMenu = ({
     >
       <MenuItem onClick={onUnread} sx={sxItemProps}>
         <ListItemIcon>
-          <Icon sx={sxIconProps} />
+          <MarkEmailUnreadIcon sx={{ ...sxIconProps, color }} />
         </ListItemIcon>
-        <ListItemText sx={sxItemTextProps}>
-          {isOnlyUnread ? 'Show all' : 'Show only unread'}
+        <ListItemText sx={{ ...sxItemTextProps, color }}>
+          Show only unread
         </ListItemText>
       </MenuItem>
     </Menu>
