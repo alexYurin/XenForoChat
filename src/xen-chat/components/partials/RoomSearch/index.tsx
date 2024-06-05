@@ -92,7 +92,10 @@ const RoomSearch = memo(({ elRef }: RoomSearchProps) => {
     }
 
     if (isTouched && searchString.length === 0) {
-      getRooms({ search: searchString })
+      getRooms({
+        search: searchString,
+        unread: filter.includes('unread') ? '1' : '0',
+      })
         .finally(() => {
           setLoading(false)
         })
