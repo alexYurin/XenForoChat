@@ -5,6 +5,7 @@ import {
   LinearProgress,
   List,
   SxProps,
+  Typography,
 } from '@mui/material'
 import Messages from './Messages'
 import { useChatStore } from '@app/store'
@@ -17,6 +18,8 @@ export type MessagesListProps = {
 }
 
 const MessagesList = ({ sx }: MessagesListProps) => {
+  const currentPage = useChatStore(state => state.currentRoomMessagesPage)
+
   const loadMoreCurrentRoomMessages = useChatStore(
     state => state.loadMoreCurrentRoomMessages,
   )
@@ -27,6 +30,8 @@ const MessagesList = ({ sx }: MessagesListProps) => {
 
   const observerTarget = useRef<HTMLDivElement>(null)
   const listTarget = useRef<HTMLUListElement>(null)
+
+  const isEndPages = currentPage === 1
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -118,6 +123,16 @@ const MessagesList = ({ sx }: MessagesListProps) => {
       >
         <Messages />
         <span ref={observerTarget} style={{ visibility: 'hidden' }} />
+        {isEndPages && (
+          <Typography
+            textAlign="center"
+            textTransform="uppercase"
+            fontSize="10px"
+            color="GrayText"
+          >
+            Start conversation
+          </Typography>
+        )}
       </List>
     </>
   )

@@ -12,7 +12,6 @@ import { stringToInitials } from '@app/helpers'
 import { StyledBadge } from './styles'
 import EmailIcon from '@mui/icons-material/Email'
 import StarPurple500OutlinedIcon from '@mui/icons-material/StarPurple500Outlined'
-import LockIcon from '@mui/icons-material/Lock'
 
 // @TODO Decompose
 

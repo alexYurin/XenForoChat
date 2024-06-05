@@ -232,7 +232,7 @@ export type RequestParamsSearchConversation = {
   starter_id?: number
   receiver_id?: number
   starred?: string
-  unread?: string
+  unread?: '1' | '0'
 }
 
 export type RequestParamsAttachmentKey = {

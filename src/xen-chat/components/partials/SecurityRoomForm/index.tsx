@@ -12,7 +12,6 @@ import {
   IconButton,
   InputAdornment,
   Typography,
-  OutlinedInput,
   TextField,
   Box,
 } from '@mui/material'
@@ -41,7 +40,7 @@ const SecurityRoomForm = () => {
 
   const handleClose = () => {
     if (setSecurityKey.resolve) {
-      setSecurityKey?.resolve()
+      setSecurityKey?.resolve(undefined)
     }
   }
 
@@ -56,8 +55,6 @@ const SecurityRoomForm = () => {
 
     const formData = new FormData(event.currentTarget)
     const formJson = Object.fromEntries((formData as any).entries())
-
-    console.log('formJson', formJson)
 
     if (setSecurityKey.resolve) {
       await setSecurityKey?.resolve(formJson.key)
@@ -146,7 +143,7 @@ const SecurityRoomForm = () => {
         </Button>
         {confirmSaveKey ? (
           <Button sx={sxButton} variant="contained" type="submit">
-            Confirm
+            Send
           </Button>
         ) : (
           <Button

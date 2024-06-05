@@ -38,7 +38,7 @@ const AppControl = ({
     <Badge
       badgeContent={unreadRooms?.length}
       overlap="circular"
-      color="error"
+      color="warning"
       onClick={changeMinimize}
       anchorOrigin={{
         vertical: 'top',

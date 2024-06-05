@@ -88,6 +88,7 @@ export interface ChatState {
   ) => Promise<void>
   update: () => Promise<void>
   searchString: string
+  searchFilter: { unread: '1' | '0' }
   rooms: Room[] | null
   getRooms: (params?: Partial<RequestParamsSearchConversation>) => Promise<void>
   loadMoreRooms: () => Promise<void>
@@ -102,10 +103,10 @@ export interface ChatState {
     generateKey?: string
   } | null
   setSecurityKey: {
-    resolve: ((value: void | PromiseLike<void>) => void) | null
+    resolve: ((value: string | undefined) => void) | null
   }
   securityKeys?: { roomId: number; key: string }[]
-  waitSecurityKey: () => Promise<void>
+  waitSecurityKey: () => Promise<string | undefined>
   setCurrentRoom: (roomId: number, messagesPage?: number) => Promise<void>
   addNewRoom: (params: RequestParamsAddConversation) => Promise<void>
   updateRoom: (
@@ -412,36 +413,38 @@ const useChatStore = create<ChatState>()(
         const currentRoom = get().currentRoom
         const currentPage = get().roomsPage
 
-        await get().getRooms({
-          search: get().searchString,
-          page: 1 /*currentPage*/,
-        })
-        // .then(() => {
-        //   if (currentRoom) {
-        //     get().setCurrentRoom(currentRoom.model.id)
-        //   }
-        // })
+        await get()
+          .getRooms({
+            search: get().searchString,
+            unread: get().searchFilter.unread,
+            page: 1 /*currentPage*/,
+          })
+          .then(() => {
+            if (currentRoom) {
+              get().setCurrentRoom(currentRoom.model.id)
+            }
+          })
 
         // @TODO Handle Current last page messages
-        if (currentRoom) {
-          const { fetchRoomMessages } = useXenForoApiStore.getState()
+        // if (currentRoom) {
+        //   const { fetchRoomMessages } = useXenForoApiStore.getState()
 
-          const response = await fetchRoomMessages(
-            currentRoom.model.id,
-            currentRoom.model.lastPageNumber,
-          )
+        //   const response = await fetchRoomMessages(
+        //     currentRoom.model.id,
+        //     currentRoom.model.lastPageNumber,
+        //   )
 
-          if (
-            currentRoom.model.lastMessageId !==
-            response.messages.at(-1)?.model.id
-          ) {
-            set(() => ({
-              currentRoomMessages: response.messages.toReversed(),
-              currentRoomMessagesPage: response.pagination.currentPage,
-              lastCurrentRoomMessagesPage: response.pagination.lastPage,
-            }))
-          }
-        }
+        //   if (
+        //     currentRoom.model.lastMessageId !==
+        //     response.messages.at(-1)?.model.id
+        //   ) {
+        //     set(() => ({
+        //       currentRoomMessages: response.messages.toReversed(),
+        //       currentRoomMessagesPage: response.pagination.currentPage,
+        //       lastCurrentRoomMessagesPage: response.pagination.lastPage,
+        //     }))
+        //   }
+        // }
       },
 
       currentRoom: null,
@@ -455,7 +458,7 @@ const useChatStore = create<ChatState>()(
       setSecurityKey: { resolve: null },
       waitSecurityKey: () =>
         new Promise(resolve => {
-          set(() => ({ setSecurityKey: { resolve } }))
+          return set(() => ({ setSecurityKey: { resolve } }))
         }),
       setCurrentRoom: async (roomId, messagesPage = 0) => {
         const { getRoom } = useXenForoApiStore.getState()
@@ -510,8 +513,6 @@ const useChatStore = create<ChatState>()(
 
           enterSecurityKey = await get().waitSecurityKey()
 
-          console.log('enterSecurityKey', enterSecurityKey)
-
           await set(() => ({
             securityKeys: [
               ...(get().securityKeys || []),
@@ -528,21 +529,20 @@ const useChatStore = create<ChatState>()(
           }
         }
 
-        // 4Y_iC1BeeORWGQe6RZvgZPdQq0Rmichp test-protected
+        // 4Y_iC1BeeORWGQe6RZvgZPdQq0Rmichp test-protected (testa)
 
-        // to8qtfCm6NKFEfiCvVZEi5zQfphCRtdX
+        // n_tMsN3FXZlEUIRtZb7iqLGHKJmHGdaq Prot (testb)
+        // n_tMsN3FXZlEUIRtZb7iqLGHKJmHGdaq Prot (testa)
+        // n_tMsN3FXZlEUIRtZb7iqLGHKJmHGdaq Prot (testc)
 
-        // HwuwoeX02n1K4BSx-mI6HZTcM2sR3Xtq
-
-        // 6r7LjsduDhl1P2GUT0Fw-crNRLBqBZJL
+        // ngmMuqqG7AyY427PkvYoCGQ37Y4MNjZl test protected (testa)
+        // ngmMuqqG7AyY427PkvYoCGQ37Y4MNjZl Test protected (testc)
 
         try {
           const user = get().user
           const securityKey = get().securityKeys?.find(
             pair => pair.roomId === roomId,
           )?.key
-
-          console.log('!!!', securityKey)
 
           const { fetchRoomMessages } = useXenForoApiStore.getState()
 
@@ -617,7 +617,12 @@ const useChatStore = create<ChatState>()(
           }
         } catch (error) {
           const responseError = error as ResponseErrorType
-          set(() => ({ error: createError(responseError) }))
+          set(() => ({
+            securityKeys: get().securityKeys?.filter(
+              pair => pair.roomId !== roomId,
+            ),
+            error: createError(responseError),
+          }))
 
           get().setLoadingRoom(null)
         }
@@ -764,9 +769,13 @@ const useChatStore = create<ChatState>()(
       roomsPage: 1,
       lastRoomsPage: null,
       searchString: '',
+      searchFilter: {
+        unread: '0',
+      },
       loadMoreRooms: async () => {
         const roomsPage = get().roomsPage
         const lastRoomsPage = get().lastRoomsPage
+        const unread = get().searchFilter.unread
 
         if (roomsPage < (lastRoomsPage || 1)) {
           const { fetchRooms } = useXenForoApiStore.getState()
@@ -775,6 +784,7 @@ const useChatStore = create<ChatState>()(
           try {
             const response = await fetchRooms({
               page: roomsPage + 1,
+              unread,
             })
 
             set(() => ({
@@ -792,14 +802,17 @@ const useChatStore = create<ChatState>()(
 
       getRooms: async params => {
         const search = params?.search ?? ''
+        const unread = params?.unread ?? '0'
+
         const { fetchRooms } = useXenForoApiStore.getState()
 
-        set(() => ({ searchString: search }))
+        set(() => ({ searchString: search, searchFilter: { unread } }))
 
         try {
           const response = await fetchRooms({
             search,
-            page: search ? 1 : params?.page ?? 1,
+            unread,
+            page: search || unread === '1' ? 1 : params?.page ?? 1,
           })
 
           set(() => ({

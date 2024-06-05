@@ -24,8 +24,6 @@ export type AccountMenuProps = {
 // @TODO Connect actions
 
 const ToolsMenu = ({ anchorElement, isOpen, onClose }: AccountMenuProps) => {
-  const user = useChatStore(state => state.user)
-
   const currentRoom = useChatStore(state => state.currentRoom)
 
   const setStarRoom = useChatStore(state => state.setStarRoom)

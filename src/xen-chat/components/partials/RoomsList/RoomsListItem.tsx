@@ -29,6 +29,7 @@ const RoomsListItem = ({ listRef, detail }: RoomsListItemProps) => {
   }
 
   const isSelected = currentRoom?.model.id === detail.id
+  const isUnread = detail.isUnread
 
   // @TODO Calculate
   const calcWidthText = 'calc(100% - 22px)'
@@ -57,13 +58,17 @@ const RoomsListItem = ({ listRef, detail }: RoomsListItemProps) => {
   }, [ref, listRef, loadingRoom])
 
   const label = (
-    <Box sx={{ display: 'flex', flexFlow: 'nowrap' }}>
+    <Box sx={{ display: 'flex', flexFlow: 'nowrap', position: 'relative' }}>
+      {detail.security.enabled && (
+        <Box display="flex" alignItems="center" sx={{ mr: 0.5, ml: '-2px' }}>
+          <LockIcon sx={{ width: 14, height: 14, color: 'red' }} />
+        </Box>
+      )}
       <Typography
         noWrap={true}
         sx={{
           fontSize: 14,
           fontWeight: 500,
-          paddingLeft: detail.security.enabled ? '16px' : 0,
         }}
       >
         {detail.title}
@@ -92,6 +97,7 @@ const RoomsListItem = ({ listRef, detail }: RoomsListItemProps) => {
         paddingX: 0,
         paddingY: 0,
         pointerEvents: loadingRoom ? 'none' : 'unset',
+        bgcolor: isUnread ? '#eeeeee59' : '#fff',
       }}
     >
       <ListItemButton
@@ -102,10 +108,10 @@ const RoomsListItem = ({ listRef, detail }: RoomsListItemProps) => {
           paddingX: 0,
           paddingY: 0,
           '&.Mui-selected': {
-            bgcolor: 'rgba(213, 213, 213, 0.2)',
+            bgcolor: 'rgba(213, 213, 213, 0.4)',
           },
           '&.Mui-selected:hover': {
-            bgcolor: 'rgba(213, 213, 213, 0.1)',
+            bgcolor: 'rgba(213, 213, 213, 0.6)',
           },
         }}
       >
@@ -134,16 +140,6 @@ const RoomsListItem = ({ listRef, detail }: RoomsListItemProps) => {
                 >
                   {detail.note}
                 </Typography>
-              )}
-              {detail.security.enabled && (
-                <Box
-                  display="flex"
-                  alignItems="center"
-                  gap={0.2}
-                  sx={{ position: 'absolute', top: '11px', left: '50px' }}
-                >
-                  <LockIcon sx={{ width: 14, height: 14, color: 'red' }} />
-                </Box>
               )}
             </>
           }
