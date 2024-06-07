@@ -16,7 +16,12 @@ export type RoomModelType = {
   isOpenConversation: boolean
   members: Member[]
   owner: Member
-  actions: { title: string; url: string; isTargetBlank: boolean }[]
+  actions: {
+    title: string
+    url: string
+    isTargetBlank: boolean
+    confirmation?: string
+  }[]
   firstMessageId: MessageModelType['id']
   lastMessageId: MessageModelType['id']
   lastMessageDate: Date

@@ -41,6 +41,7 @@ export type ConversationActionType = {
   url: string
   title: string
   new_window: boolean
+  confirmation?: string
 }
 
 export type ConversationMessageType = {

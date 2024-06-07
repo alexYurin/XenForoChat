@@ -60,6 +60,7 @@ export function adoptRoom(conversation: ConversationType) {
       title: action.title,
       url: action.url,
       isTargetBlank: action.new_window,
+      confirmation: action.confirmation,
     })),
     members: conversation.members.map(
       member =>
