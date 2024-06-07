@@ -19,10 +19,19 @@ const ActionDialog = ({ detail, handleClose }: ActionDialogProps) => {
   const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
 
-    if (detail) {
-      handleClose()
-      window.open(detail.url, detail.isTargetBlank ? '_blank' : '')
+    if (!detail) {
+      return
     }
+
+    handleClose()
+
+    if (detail.isTargetBlank) {
+      window.open(detail.url, '_blank')
+
+      return
+    }
+
+    window.location.href = detail.url
   }
 
   return (
