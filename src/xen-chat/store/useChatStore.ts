@@ -107,7 +107,7 @@ export interface ChatState {
   }
   securityKeys?: { roomId: number; key: string }[]
   waitSecurityKey: () => Promise<string | undefined>
-  setCurrentRoom: (roomId: number, messagesPage?: number) => Promise<void>
+  setCurrentRoom: (roomId: number, isUpdate?: boolean) => Promise<void>
   addNewRoom: (params: RequestParamsAddConversation) => Promise<void>
   updateRoom: (
     roomId: number,
@@ -158,11 +158,7 @@ const useChatStore = create<ChatState>()(
 
         const setRoom = (roomId: number) => {
           try {
-            get().setCurrentRoom(
-              roomId,
-              get().rooms?.find(room => room.model.id === roomId)?.model
-                .lastPageNumber,
-            )
+            get().setCurrentRoom(roomId)
           } catch {
             console.log(`Room id: ${roomId} is not exist`)
           }
@@ -413,6 +409,8 @@ const useChatStore = create<ChatState>()(
         const currentRoom = get().currentRoom
         const currentPage = get().roomsPage
 
+        // @TODO handle current page
+
         await get()
           .getRooms({
             search: get().searchString,
@@ -421,30 +419,9 @@ const useChatStore = create<ChatState>()(
           })
           .then(() => {
             if (currentRoom) {
-              get().setCurrentRoom(currentRoom.model.id)
+              get().setCurrentRoom(currentRoom.model.id, true)
             }
           })
-
-        // @TODO Handle Current last page messages
-        // if (currentRoom) {
-        //   const { fetchRoomMessages } = useXenForoApiStore.getState()
-
-        //   const response = await fetchRoomMessages(
-        //     currentRoom.model.id,
-        //     currentRoom.model.lastPageNumber,
-        //   )
-
-        //   if (
-        //     currentRoom.model.lastMessageId !==
-        //     response.messages.at(-1)?.model.id
-        //   ) {
-        //     set(() => ({
-        //       currentRoomMessages: response.messages.toReversed(),
-        //       currentRoomMessagesPage: response.pagination.currentPage,
-        //       lastCurrentRoomMessagesPage: response.pagination.lastPage,
-        //     }))
-        //   }
-        // }
       },
 
       currentRoom: null,
@@ -460,7 +437,7 @@ const useChatStore = create<ChatState>()(
         new Promise(resolve => {
           return set(() => ({ setSecurityKey: { resolve } }))
         }),
-      setCurrentRoom: async (roomId, messagesPage = 0) => {
+      setCurrentRoom: async (roomId, isUpdate) => {
         const { getRoom } = useXenForoApiStore.getState()
         const prevRoomId = get().currentRoom?.model?.id
 
@@ -477,14 +454,16 @@ const useChatStore = create<ChatState>()(
           currentRoom = extraResponse.room
         }
 
-        const lastPage = currentRoom?.model.lastPageNumber || messagesPage
+        const lastPage = currentRoom?.model.lastPageNumber || 1
 
-        get().setLoadingRoom(roomId)
+        if (!isUpdate) {
+          get().setLoadingRoom(roomId)
 
-        set(() => ({
-          inputMode: 'default',
-          inputModeContent: null,
-        }))
+          set(() => ({
+            inputMode: 'default',
+            inputModeContent: null,
+          }))
+        }
 
         const isShowSecurity = currentRoom.model.security.enabled
         const isReceivedSecurityKey = currentRoom.model.security.keyReceived
@@ -502,7 +481,7 @@ const useChatStore = create<ChatState>()(
           generatedRoomKey = await generateSecureRoomKey(roomId)
         }
 
-        if (isShowSecurity && !securityPair?.key) {
+        if (isShowSecurity && !securityPair?.key && !isUpdate) {
           set(() => ({
             securityRoomProps: {
               ...currentRoom.model.security,
@@ -522,7 +501,9 @@ const useChatStore = create<ChatState>()(
             securityRoomProps: null,
           }))
 
-          get().setLoadingRoom(null)
+          if (!isUpdate) {
+            get().setLoadingRoom(null)
+          }
 
           if (!enterSecurityKey) {
             return
@@ -552,6 +533,7 @@ const useChatStore = create<ChatState>()(
             securityKey,
           )
 
+          const prevRoomMessages = get().currentRoomMessages
           const currentRoomMessages = response.messages.toReversed()
 
           if (isOutRangeRoom) {
@@ -560,20 +542,45 @@ const useChatStore = create<ChatState>()(
             isOutRangeRoom = false
           }
 
-          set(() => ({
-            currentRoom: isShowSecurity
-              ? new Room({
-                  ...currentRoom.model,
-                  security: {
-                    enabled: true,
-                    keyReceived: Boolean(securityKey),
-                  },
-                })
-              : currentRoom,
-            currentRoomMessages,
-            currentRoomMessagesPage: response.pagination.currentPage,
-            lastCurrentRoomMessagesPage: response.pagination.lastPage,
-          }))
+          let updateStore: Partial<ChatState> = {}
+
+          if (isUpdate) {
+            const updatedRoom = get().rooms?.find(
+              room => room.model.id === roomId,
+            )
+
+            updateStore = {
+              ...(updatedRoom?.model.lastMessageId !==
+              prevRoomMessages?.at(0)?.model.id
+                ? {
+                    currentRoomMessages,
+                    currentRoomMessagesPage: response.pagination.currentPage,
+                    lastCurrentRoomMessagesPage: response.pagination.lastPage,
+                  }
+                : {}),
+            }
+          } else {
+            updateStore = {
+              ...(roomId !== prevRoomId
+                ? {
+                    currentRoom: isShowSecurity
+                      ? new Room({
+                          ...currentRoom.model,
+                          security: {
+                            enabled: true,
+                            keyReceived: Boolean(securityKey),
+                          },
+                        })
+                      : currentRoom,
+                  }
+                : {}),
+              currentRoomMessages,
+              currentRoomMessagesPage: response.pagination.currentPage,
+              lastCurrentRoomMessagesPage: response.pagination.lastPage,
+            }
+          }
+
+          set(() => updateStore)
 
           if (currentRoom?.model.isUnread) {
             get().setUnreadRoom(roomId, false)

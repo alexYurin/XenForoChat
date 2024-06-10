@@ -151,12 +151,12 @@ const SettingsRoomForm = () => {
     }
 
     if (isChangeNote) {
-      await noteRoom(room!.model.id, note)
+      await noteRoom(room!.model.id, note.trim())
     }
 
     if (isChangeSettings) {
       await updateRoom(room!.model.id, {
-        title: title || room?.model.title,
+        title: (title || room?.model.title)?.trim(),
         conversation_open: !isLockConversation ? '1' : '0',
         open_invite: isOpenInvite ? '1' : '0',
       })

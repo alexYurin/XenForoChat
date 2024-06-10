@@ -1,10 +1,4 @@
-import {
-  KeyboardEventHandler,
-  useState,
-  useRef,
-  useEffect,
-  RefObject,
-} from 'react'
+import { KeyboardEventHandler, useState, useRef, useEffect, memo } from 'react'
 import { Editor, AttachmentFile } from '@app/components/ui'
 import DisplayAttachments from './DisplayAttachmets'
 import {
@@ -17,8 +11,6 @@ import {
   Typography,
 } from '@mui/material'
 import { filterByExt, filterBySizeInMb } from './helpers'
-import data from '@emoji-mart/data'
-import EmojiPicker from '@emoji-mart/react'
 import SendIcon from '@mui/icons-material/Send'
 import { useChatStore } from '@app/store'
 import { toBBCode } from '@app/helpers'
@@ -38,12 +30,8 @@ const ALLOW_EXTENSIONS = [
   'gif',
 ]
 
-export type MessageInputProps = {
-  elRef?: RefObject<HTMLDivElement>
-}
-
 // @TODO Decompose
-const MessageInput = ({ elRef }: MessageInputProps) => {
+const MessageInput = () => {
   const currentRoom = useChatStore(state => state.currentRoom)
 
   const sendMessage = useChatStore(state => state.sendMessage)
@@ -61,8 +49,6 @@ const MessageInput = ({ elRef }: MessageInputProps) => {
   const [content, setContent] = useState('')
 
   const [attachments, setAttachments] = useState<File[]>([])
-
-  const [isVisibleEmoji, setVisibleEmoji] = useState(false)
 
   const [isLoading, setLoading] = useState(false)
 
@@ -194,14 +180,6 @@ const MessageInput = ({ elRef }: MessageInputProps) => {
     setInputMode('default', null)
   }
 
-  const toggleVisibleEmoji = () => {
-    setVisibleEmoji(!isVisibleEmoji)
-  }
-
-  const onSelectEmoji = (props: { native: string }) => {
-    setContent(content + props.native)
-  }
-
   const onKeyDown: KeyboardEventHandler<HTMLDivElement> = event => {
     if (event.code === 'Enter' && event.shiftKey) {
       return
@@ -256,11 +234,7 @@ const MessageInput = ({ elRef }: MessageInputProps) => {
   const isVisibleTools = attachments.length > 0 || inputMode !== 'default'
 
   return (
-    <Stack
-      ref={elRef}
-      sx={{ position: 'relative', mt: 'auto' }}
-      onKeyDown={onKeyDown}
-    >
+    <Stack sx={{ position: 'relative', mt: 'auto' }} onKeyDown={onKeyDown}>
       <DisplayAttachments
         isVisible={isVisibleTools}
         title={toolsTitle}
@@ -396,15 +370,6 @@ const MessageInput = ({ elRef }: MessageInputProps) => {
             visibility: isRoomLock || isLoading ? 'hidden' : 'visible',
           }}
         />
-
-        {/* <Button
-          disabled={isLoading}
-          variant={isVisibleEmoji ? 'contained' : 'outlined'}
-          onClick={toggleVisibleEmoji}
-          sx={sxButton}
-        >
-          <InsertEmoticonIcon sx={sxIcon} />
-        </Button> */}
         <Button
           type="button"
           disabled={isLoading || isRoomLock}
@@ -415,12 +380,6 @@ const MessageInput = ({ elRef }: MessageInputProps) => {
           <SendIcon sx={sxIcon} />
         </Button>
       </Box>
-      {isVisibleEmoji && (
-        <Box sx={{ position: 'absolute', right: 15, bottom: '100%', mb: 2 }}>
-          <EmojiPicker data={data} onEmojiSelect={onSelectEmoji} />
-        </Box>
-      )}
-
       <Snackbar
         open={Boolean(error)}
         anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
@@ -441,4 +400,4 @@ const MessageInput = ({ elRef }: MessageInputProps) => {
   )
 }
 
-export default MessageInput
+export default memo(MessageInput)

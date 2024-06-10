@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import {
   AppMessage,
   AddRoomForm,
+  MessageInput,
   SettingsRoomForm,
   LeaveRoomDialog,
   RemoveRoomDialog,
@@ -31,8 +32,6 @@ export default function XenChatApp({ root, mode, closeApp }: XenChatAppProps) {
   const setReady = useChatStore(state => state.setReady)
   const update = useChatStore(state => state.update)
   const handleApiUrl = useChatStore(state => state.handleApiUrl)
-
-  const add = useChatStore(state => state.addNewRoom)
 
   let subscribeId: NodeJS.Timeout
   let timeoutId: NodeJS.Timeout
@@ -85,7 +84,11 @@ export default function XenChatApp({ root, mode, closeApp }: XenChatAppProps) {
 
   return (
     <>
-      <Layout root={root} closeApp={closeApp} />
+      <Layout
+        root={root}
+        closeApp={closeApp}
+        inputComponent={<MessageInput />}
+      />
       <AddRoomForm />
       <SettingsRoomForm />
       <SecurityRoomForm />

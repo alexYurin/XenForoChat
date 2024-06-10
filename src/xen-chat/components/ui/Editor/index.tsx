@@ -1,6 +1,7 @@
 import {
   CSSProperties,
   KeyboardEventHandler,
+  memo,
   RefObject,
   useEffect,
 } from 'react'
@@ -97,4 +98,4 @@ const Editor = ({
   )
 }
 
-export default Editor
+export default memo(Editor)

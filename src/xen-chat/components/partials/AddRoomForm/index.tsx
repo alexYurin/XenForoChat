@@ -59,9 +59,9 @@ const AddRoomForm = ({ onClose }: AddRoomFormProps) => {
 
     let params: Partial<RequestParamsAddConversation> = {
       recipient_ids: users.map(user => user.user_id),
-      title: formJson.title,
-      note: formJson.note ?? '',
-      message: formJson.message ?? '',
+      title: formJson.title.trim(),
+      note: formJson.note.trim() ?? '',
+      message: formJson.message.trim() ?? '',
     }
 
     if (formJson.open_invite === 'on') {

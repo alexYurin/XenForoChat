@@ -57,7 +57,7 @@ const SecurityRoomForm = () => {
     const formJson = Object.fromEntries((formData as any).entries())
 
     if (setSecurityKey.resolve) {
-      await setSecurityKey?.resolve(formJson.key)
+      await setSecurityKey?.resolve(formJson.key.trim())
 
       setLoading(false)
     }

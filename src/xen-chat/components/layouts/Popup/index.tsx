@@ -1,9 +1,8 @@
-import { useEffect, useRef, useState } from 'react'
+import { useRef, useState } from 'react'
 import { styled } from '@mui/material/styles'
 import { Paper, Grid, Box, Divider, SxProps } from '@mui/material'
 import {
   MessagesList,
-  MessageInput,
   RoomSearch,
   RoomsList,
   ToolsPanel,
@@ -14,7 +13,7 @@ import { Empty } from '@app/components/ui'
 import { useChatStore } from '@app/store'
 import type { LayoutProps } from '@app/components/layouts/types'
 
-const PopupLayout = ({ root, closeApp }: LayoutProps) => {
+const PopupLayout = ({ root, closeApp, inputComponent }: LayoutProps) => {
   const rootHeight = useChatStore(state => state.rootHeight)
   const currentRoom = useChatStore(state => state.currentRoom)
   const setRootHeight = useChatStore(state => state.setRootHeight)
@@ -129,7 +128,7 @@ const PopupLayout = ({ root, closeApp }: LayoutProps) => {
                     <Divider sx={sxDivider} />
                     <MessagesList sx={{ height: sectionHeight - 82 }} />
                     <Divider sx={sxDivider} />
-                    <MessageInput />
+                    {inputComponent}
                   </>
                 ) : (
                   <Empty
