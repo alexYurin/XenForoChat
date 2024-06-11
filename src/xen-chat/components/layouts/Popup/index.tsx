@@ -11,11 +11,12 @@ import {
 } from '@app/components/partials'
 import { Empty } from '@app/components/ui'
 import { useChatStore } from '@app/store'
+import { shallow } from 'zustand/shallow'
 import type { LayoutProps } from '@app/components/layouts/types'
 
 const PopupLayout = ({ root, closeApp, inputComponent }: LayoutProps) => {
   const rootHeight = useChatStore(state => state.rootHeight)
-  const currentRoom = useChatStore(state => state.currentRoom)
+  const currentRoom = useChatStore(state => state.currentRoom, shallow)
   const setRootHeight = useChatStore(state => state.setRootHeight)
   const resetCurrentRoom = useChatStore(state => state.resetCurrentRoom)
   const isMinimize = useChatStore(state => state.isMinimize)

@@ -9,12 +9,13 @@ import {
 import { styled } from '@mui/material/styles'
 import { Paper, Grid, Box, Divider, SxProps } from '@mui/material'
 import { useChatStore } from '@app/store'
+import { shallow } from 'zustand/shallow'
 import { Empty } from '@app/components/ui'
 import { LayoutProps } from '@app/components/layouts/types'
 
 const BasicLayout = ({ inputComponent }: LayoutProps) => {
   const rootHeight = useChatStore(state => state.rootHeight)
-  const currentRoom = useChatStore(state => state.currentRoom)
+  const currentRoom = useChatStore(state => state.currentRoom, shallow)
   const resetCurrentRoom = useChatStore(state => state.resetCurrentRoom)
 
   const [isVisibleMessagesBox, setVisibleMessagesBox] = useState(
